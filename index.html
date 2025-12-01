@@ -1,0 +1,3354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хемпьютер: Окислительно-восстановительные вычисления на основе Fe²⁺/Fe³⁺</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        /* ===== БАЗОВЫЕ СТИЛИ И СБРОС ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+            font-weight: 400;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== СИСТЕМА ПЕРЕМЕННЫХ CSS ===== */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --accent: #f59e0b;
+            --accent-dark: #d97706;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --darkest: #020617;
+            --light: #f8fafc;
+            --light-gray: #f1f5f9;
+            --gray: #64748b;
+            --gray-light: #cbd5e1;
+            --gray-dark: #475569;
+            
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --gradient-blue: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            --gradient-blue-light: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+            --gradient-yellow: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            --gradient-yellow-light: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+            --gradient-green: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+            --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --border-radius: 0.75rem;
+            --border-radius-lg: 1rem;
+            --border-radius-xl: 1.5rem;
+        }
+
+        /* ===== СТИЛИ ДЛЯ ЭМОДЗИ-ИКОНОК ===== */
+        .emoji-icon {
+            font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+            font-size: inherit;
+            display: none;
+        }
+
+        .icons-failed .emoji-icon {
+            display: inline-block;
+        }
+
+        .icons-failed .fas,
+        .icons-failed .far,
+        .icons-failed .fab {
+            display: none !important;
+        }
+
+        /* ===== ФОН И АНИМАЦИИ ===== */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--darkest) 0%, var(--darker) 50%, #1a237e 100%);
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .floating-molecules {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .molecule {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            animation: rotate 15s infinite linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            opacity: 0.1;
+            filter: blur(1px);
+        }
+
+        .molecule:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            width: 80px;
+            height: 80px;
+        }
+
+        .molecule:nth-child(2) {
+            top: 70%;
+            right: 15%;
+            animation-delay: -5s;
+            width: 100px;
+            height: 100px;
+        }
+
+        .molecule:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -10s;
+            width: 60px;
+            height: 60px;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* ===== ЛОГОТИПЫ ===== */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: translateY(-2px);
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Иконка колбы */
+        .flask-icon {
+            position: relative;
+            width: 32px;
+            height: 40px;
+        }
+
+        .flask-body {
+            width: 24px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 12px 12px 4px 4px;
+            position: absolute;
+            bottom: 0;
+            left: 4px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .flask-neck {
+            width: 8px;
+            height: 12px;
+            background: var(--primary-light);
+            border-radius: 4px 4px 0 0;
+            position: absolute;
+            top: 0;
+            left: 12px;
+            transition: var(--transition);
+        }
+
+        .chemical-bubble {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            bottom: 4px;
+            animation: bubble-rise 2s infinite ease-in-out;
+            opacity: 0;
+        }
+
+        .chemical-bubble:nth-child(3) {
+            left: 8px;
+            animation-delay: 0.5s;
+        }
+
+        .chemical-bubble:nth-child(4) {
+            left: 16px;
+            animation-delay: 1s;
+        }
+
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .logo:hover .flask-body {
+            background: var(--primary-light);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .logo:hover .flask-neck {
+            background: var(--primary);
+        }
+
+        .logo:hover .chemical-bubble {
+            animation-duration: 1.5s;
+        }
+
+        /* Логотип Элемент X */
+        .element-x-logo {
+            width: 20px;
+            height: 20px;
+            position: relative;
+            margin-right: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .element-x-logo::before,
+        .element-x-logo::after {
+            content: '';
+            position: absolute;
+            background: currentColor;
+            border-radius: 1px;
+            transition: var(--transition);
+        }
+
+        .element-x-logo::before {
+            width: 100%;
+            height: 3px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        .element-x-logo::after {
+            width: 100%;
+            height: 3px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%) rotate(-45deg);
+        }
+
+        /* Молекулярные точки вокруг X */
+        .element-x-logo .atom {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: float 3s infinite ease-in-out;
+            opacity: 0;
+        }
+
+        .element-x-logo .atom:nth-child(1) {
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: 0s;
+        }
+
+        .element-x-logo .atom:nth-child(2) {
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: 0.5s;
+        }
+
+        .element-x-logo .atom:nth-child(3) {
+            top: 50%;
+            left: -2px;
+            transform: translateY(-50%);
+            animation-delay: 1s;
+        }
+
+        .element-x-logo .atom:nth-child(4) {
+            top: 50%;
+            right: -2px;
+            transform: translateY(-50%);
+            animation-delay: 1.5s;
+        }
+
+        .team-badge:hover .element-x-logo::before,
+        .team-badge:hover .element-x-logo::after {
+            transform: translateY(-50%) rotate(45deg) scale(1.1);
+        }
+
+        .team-badge:hover .element-x-logo .atom {
+            opacity: 1;
+        }
+
+        .team-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent);
+            padding: 0.35rem 0.85rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            margin-left: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .team-badge:hover {
+            background: rgba(245, 158, 11, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== ХЕДЕР ===== */
+        .main-header {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .main-header.scrolled {
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .main-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.65rem 1.25rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+            transition: var(--transition-slow);
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--light);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 1.25rem;
+            right: 1.25rem;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 1px;
+        }
+
+        /* Мобильное меню */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            z-index: 2000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.5s ease;
+        }
+
+        .mobile-nav.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-nav .nav-link {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            color: var(--light);
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .close-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+
+        /* ===== ГЕРОЙ СЕКЦИЯ ===== */
+        .hero-section {
+            padding: 10rem 2rem 8rem;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .hero-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.75rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.75rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--primary) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-blue);
+            border-radius: 2px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.35rem;
+            color: var(--gray-light);
+            margin-bottom: 2.75rem;
+            line-height: 1.7;
+            max-width: 90%;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1.15rem 2.25rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition-slow);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .chemical-animation {
+            position: relative;
+            width: 380px;
+            height: 380px;
+        }
+
+        .reaction-vessel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--primary-light), var(--accent), var(--secondary), var(--primary-light));
+            animation: pulse 4s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 0 50px rgba(99, 102, 241, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 50px rgba(99, 102, 241, 0.5); }
+            50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 70px rgba(99, 102, 241, 0.7); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 50px rgba(99, 102, 241, 0.5); }
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            animation: float-element 8s infinite ease-in-out;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            left: 20%;
+            background: var(--gradient-yellow);
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(3) {
+            top: 20%;
+            right: 20%;
+            background: var(--gradient-blue);
+            animation-delay: -2.66s;
+        }
+
+        .floating-element:nth-child(4) {
+            bottom: 20%;
+            left: 20%;
+            background: var(--gradient-green);
+            animation-delay: -5.33s;
+        }
+
+        @keyframes float-element {
+            0% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(10px) rotate(240deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+
+        /* ===== ОБЩИЕ СТИЛИ СЕКЦИЙ ===== */
+        section {
+            padding: 7rem 2rem;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+            position: relative;
+        }
+
+        .section-header h2 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-blue);
+            border-radius: 2px;
+        }
+
+        .section-header p {
+            font-size: 1.3rem;
+            color: var(--gray-light);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ===== ТЕОРИЯ ===== */
+        .theory-section {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.9) 100%);
+        }
+
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .theory-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            padding: 2.75rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--gradient);
+        }
+
+        .theory-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card-icon {
+            width: 90px;
+            height: 90px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--border-radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+            font-size: 2.25rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .theory-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .theory-card h3 {
+            font-size: 1.65rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--light);
+        }
+
+        .theory-card p {
+            color: var(--gray-light);
+            margin-bottom: 1.75rem;
+            line-height: 1.7;
+        }
+
+        .bit-demo {
+            display: flex;
+            gap: 1.25rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .chemical-bit {
+            width: 90px;
+            height: 90px;
+            border-radius: var(--border-radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem;
+            font-weight: 700;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chemical-bit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            opacity: 0.8;
+            z-index: -1;
+        }
+
+        .chemical-bit.zero {
+            background: var(--gradient-yellow);
+            color: var(--dark);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .chemical-bit.one {
+            background: var(--gradient-blue);
+            color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .chemical-bit:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .theory-list {
+            list-style: none;
+        }
+
+        .theory-list li {
+            padding: 0.85rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .theory-list li:hover {
+            color: var(--light);
+            padding-left: 0.5rem;
+        }
+
+        .theory-list li:last-child {
+            border-bottom: none;
+        }
+
+        .theory-list li::before {
+            content: '•';
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .state-zero {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .state-one {
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .operations-preview {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .op-tag {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--primary);
+            padding: 0.65rem 1.25rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: var(--transition);
+        }
+
+        .op-tag:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* ===== ПРИНЦИПЫ РАБОТЫ ===== */
+        .chemical-principles {
+            margin-top: 5rem;
+        }
+
+        .chemical-principles h3 {
+            font-size: 2.25rem;
+            text-align: center;
+            margin-bottom: 3.5rem;
+            color: var(--light);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .chemical-principles h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--gradient-blue);
+            border-radius: 2px;
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .principle-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .principle-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(245, 158, 11, 0.05));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .principle-item:hover::before {
+            opacity: 1;
+        }
+
+        .principle-item:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .principle-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            opacity: 0.3;
+            transition: var(--transition);
+        }
+
+        .principle-item:hover .principle-number {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+
+        .principle-item h4 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--light);
+        }
+
+        .principle-item p {
+            color: var(--gray-light);
+            line-height: 1.7;
+        }
+
+        /* ===== СИМУЛЯТОР ===== */
+        .simulator-section {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+        }
+
+        .simulator-container {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 3.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== ПАНЕЛЬ УПРАВЛЕНИЯ ===== */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .panel-section {
+            margin-bottom: 2.75rem;
+        }
+
+        .panel-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .panel-section h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 1.75rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .panel-section h3::before {
+            content: '';
+            width: 5px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        .input-label {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-label span {
+            font-weight: 600;
+            color: var(--light);
+            font-size: 1.05rem;
+        }
+
+        .styled-select {
+            padding: 1.15rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 1.05rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .styled-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* ===== ОПЕРАЦИИ ===== */
+        .operations-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .operation-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .operation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            transition: var(--transition-slow);
+        }
+
+        .operation-card:hover::before {
+            left: 100%;
+        }
+
+        .operation-card:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .operation-card.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .op-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .operation-card:hover .op-icon {
+            transform: scale(1.1);
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .operation-card span {
+            font-weight: 600;
+            color: var(--light);
+            font-size: 1.15rem;
+        }
+
+        .operation-card small {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* ===== ИНСТРУМЕНТЫ ===== */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 1.15rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: center;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: var(--transition-slow);
+        }
+
+        .tool-btn:hover::before {
+            left: 100%;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== ОБЛАСТЬ ЭКСПЕРИМЕНТА ===== */
+        .experiment-area {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lab-bench {
+            position: relative;
+            min-height: 550px;
+        }
+
+        .reagent-bottles {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-bottom: 3.5rem;
+            flex-wrap: wrap;
+        }
+
+        .bottle {
+            width: 90px;
+            text-align: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .bottle:hover {
+            transform: translateY(-5px);
+        }
+
+        .bottle-liquid {
+            width: 70px;
+            height: 110px;
+            margin: 0 auto;
+            border-radius: 0 0 35px 35px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .bottle.fe2 .bottle-liquid {
+            background: linear-gradient(to bottom, var(--accent), var(--accent-dark));
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.5);
+        }
+
+        .bottle.fe3 .bottle-liquid {
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .bottle.oxidizer .bottle-liquid {
+            background: linear-gradient(to bottom, var(--danger), var(--danger-dark));
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
+        }
+
+        .bottle.reducer .bottle-liquid {
+            background: linear-gradient(to bottom, var(--secondary), var(--secondary-dark));
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .bottle span {
+            display: block;
+            margin-top: 0.75rem;
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        /* ===== СТОЙКА С ПРОБИРКАМИ ===== */
+        .test-tubes-rack {
+            display: flex;
+            justify-content: center;
+            gap: 4.5rem;
+            margin-bottom: 3.5rem;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .tube-container {
+            text-align: center;
+            position: relative;
+            transition: var(--transition);
+            margin-bottom: 2rem;
+        }
+
+        .tube-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .tube-container.result {
+            transform: scale(1.15);
+        }
+
+        .tube-container.result:hover {
+            transform: scale(1.15) translateY(-5px);
+        }
+
+        .tube {
+            width: 90px;
+            height: 180px;
+            background: linear-gradient(to bottom, transparent 90%, rgba(255, 255, 255, 0.1) 90%);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: none;
+            border-radius: 0 0 45px 45px;
+            margin: 0 auto 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .tube-liquid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 0%;
+            border-radius: 0 0 43px 43px;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--accent);
+        }
+
+        .tube-liquid.blue {
+            background: var(--primary) !important;
+            height: 85% !important;
+            box-shadow: 0 0 35px rgba(79, 70, 229, 0.7);
+        }
+
+        .tube-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 0 0 45px 45px;
+            opacity: 0;
+            transition: var(--transition);
+            box-shadow: 0 0 25px rgba(79, 70, 229, 0);
+        }
+
+        .tube-liquid.blue + .tube-glow {
+            opacity: 1;
+            box-shadow: 0 0 35px rgba(79, 70, 229, 0.5);
+        }
+
+        .reaction-bubbles {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: bubble-rise 2s infinite;
+        }
+
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .tube-label {
+            font-weight: 600;
+            color: var(--light);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .tube-value {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: var(--gray-light);
+            transition: var(--transition);
+        }
+
+        .tube-container.result .tube-value {
+            color: var(--primary);
+            font-size: 2.25rem;
+        }
+
+        /* ===== АНИМАЦИЯ РЕАКЦИИ ===== */
+        .reaction-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 220px;
+            height: 220px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .reaction-animation.active {
+            opacity: 1;
+        }
+
+        .reaction-animation .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: react 1.5s ease-out;
+        }
+
+        @keyframes react {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ===== ИНФОРМАЦИЯ ОБ ЭКСПЕРИМЕНТЕ ===== */
+        .experiment-info {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2.5rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-lg);
+            padding: 1.75rem;
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow);
+        }
+
+        .info-card h4 {
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.15rem;
+        }
+
+        .info-card h4::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .current-op {
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            padding: 1.25rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .current-op:hover {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .explanation {
+            color: var(--gray-light);
+            line-height: 1.7;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
+        }
+
+        /* ===== ТАБЛИЦЫ ИСТИННОСТИ ===== */
+        .tables-section {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+        }
+
+        .tabs-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tabs-header {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1.75rem 2.25rem;
+            background: none;
+            border: none;
+            color: var(--gray-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            font-size: 1.05rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--light);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .tabs-content {
+            padding: 2.5rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--border-radius);
+        }
+
+        .truth-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .truth-table th,
+        .truth-table td {
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .truth-table th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .truth-table td {
+            color: var(--light);
+        }
+
+        .truth-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .truth-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ===== СЕКЦИЯ ЭКСПЕРИМЕНТА ===== */
+        .experiment-section {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+        }
+
+        .experiment-guide {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            text-align: center;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -1.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3.5rem;
+            height: 3.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+            transition: var(--transition);
+        }
+
+        .step-card:hover .step-number {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .step-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1.25rem;
+            color: var(--light);
+        }
+
+        .step-card p {
+            color: var(--gray-light);
+            margin-bottom: 1.75rem;
+            line-height: 1.7;
+        }
+
+        .step-tips {
+            margin-top: 1.25rem;
+        }
+
+        .tip {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .chemical-equation {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 1.25rem;
+            transition: var(--transition);
+        }
+
+        .chemical-equation:hover {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .observation {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .obs-color {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--gray-light);
+        }
+
+        .obs-color::before {
+            content: '';
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            transition: var(--transition);
+        }
+
+        .obs-color:hover::before {
+            transform: scale(1.1);
+        }
+
+        .obs-color.green::before {
+            background: var(--accent);
+        }
+
+        .obs-color.blue::before {
+            background: var(--primary);
+        }
+
+        .results-example {
+            margin-top: 1.25rem;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .result-item.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .result-item.success:hover {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        /* ===== УВЕДОМЛЕНИЕ О БЕЗОПАСНОСТИ ===== */
+        .safety-notice {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            transition: var(--transition);
+        }
+
+        .safety-notice:hover {
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.1);
+        }
+
+        .safety-header {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .safety-header i {
+            font-size: 2.25rem;
+            color: var(--danger);
+        }
+
+        .safety-header h3 {
+            color: var(--light);
+            font-size: 1.65rem;
+        }
+
+        .safety-list {
+            list-style: none;
+            color: var(--gray-light);
+        }
+
+        .safety-list li {
+            padding: 0.85rem 0;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .safety-list li:hover {
+            color: var(--light);
+            padding-left: 0.5rem;
+        }
+
+        .safety-list li:last-child {
+            border-bottom: none;
+        }
+
+        .safety-list li::before {
+            content: '⚠️';
+            font-size: 1.35rem;
+        }
+
+        /* ===== СТИЛИ ДЛЯ СЕКЦИИ КОМАНДЫ ===== */
+        .team-section {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .team-row {
+            display: contents;
+        }
+
+        .supervisor-row {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .team-member {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xl);
+            padding: 2.5rem;
+            text-align: center;
+            position: relative;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .team-member:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .supervisor {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            max-width: 320px;
+        }
+
+        .member-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.75rem;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: conic-gradient(from 0deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            opacity: 0.9;
+            border-radius: 50%;
+        }
+
+        .member-avatar i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-member:hover .member-avatar {
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: rotate(8deg) scale(1.05);
+        }
+
+        .supervisor .member-avatar {
+            width: 130px;
+            height: 130px;
+            font-size: 3.25rem;
+            border: 4px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+        }
+
+        .supervisor .member-avatar::before {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+        }
+
+        .team-member:nth-child(1) .member-avatar::before { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); }
+        .team-member:nth-child(2) .member-avatar::before { background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }
+        .team-member:nth-child(3) .member-avatar::before { background: linear-gradient(135deg, #ffd93d 0%, #ff9c3d 100%); }
+        .team-member:nth-child(4) .member-avatar::before { background: linear-gradient(135deg, #6c5ce7 0%, #5b4cbe 100%); }
+        .team-member:nth-child(5) .member-avatar::before { background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); }
+        .team-member:nth-child(6) .member-avatar::before { background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); }
+
+        .team-member h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--light);
+            line-height: 1.3;
+        }
+
+        .supervisor h3 {
+            font-size: 1.4rem;
+            color: var(--secondary);
+        }
+
+        /* ===== ФУТЕР ===== */
+        .main-footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 5rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3.5rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.65rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--light);
+        }
+
+        .footer-section h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--light);
+        }
+
+        .footer-section p {
+            color: var(--gray-light);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 1024px) {
+            .simulator-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 3rem;
+            }
+            
+            .hero-title {
+                font-size: 2.75rem;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .theory-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .operations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .experiment-info {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-tubes-rack {
+                gap: 2rem;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tube-container {
+                margin-bottom: 2rem;
+            }
+            
+            .tube-container.result {
+                transform: scale(1);
+                order: 3;
+            }
+            
+            .tube-container.result:hover {
+                transform: translateY(-5px);
+            }
+            
+            .guide-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header h2 {
+                font-size: 2.25rem;
+            }
+            
+            .section-header p {
+                font-size: 1.15rem;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .supervisor-row {
+                margin-bottom: 2.5rem;
+            }
+            
+            .reagent-bottles {
+                gap: 1.5rem;
+            }
+            
+            .bottle {
+                width: 70px;
+            }
+            
+            .bottle-liquid {
+                width: 50px;
+                height: 80px;
+            }
+            
+            .tube {
+                width: 70px;
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 7rem 1rem 5rem;
+            }
+            
+            section {
+                padding: 5rem 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2.25rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.75rem;
+            }
+            
+            .chemical-animation {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .reaction-vessel {
+                width: 150px;
+                height: 150px;
+                font-size: 2rem;
+            }
+            
+            .floating-element {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* ===== ПЛАВНАЯ ПРОКРУТКА ===== */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* ===== КАСТОМНЫЙ СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ===== ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ ===== */
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.5); }
+        }
+
+        .glow {
+            animation: glow 2s infinite;
+        }
+
+        /* ===== УТИЛИТЫ ===== */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 1rem; }
+        .mt-2 { margin-top: 2rem; }
+        .mt-3 { margin-top: 3rem; }
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .mb-3 { margin-bottom: 3rem; }
+        .p-1 { padding: 1rem; }
+        .p-2 { padding: 2rem; }
+        .p-3 { padding: 3rem; }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-in-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-in-out;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Фон с частицами -->
+    <div class="particles-container" id="particles"></div>
+    
+    <!-- Плавающие молекулы -->
+    <div class="floating-molecules">
+        <div class="molecule">🧪</div>
+        <div class="molecule">⚗️</div>
+        <div class="molecule">🔬</div>
+    </div>
+    
+    <!-- Главный контейнер -->
+    <div class="main-container">
+        <!-- Хедер -->
+        <header class="main-header" id="mainHeader">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <div class="flask-icon">
+                            <div class="flask-body"></div>
+                            <div class="flask-neck"></div>
+                            <div class="chemical-bubble"></div>
+                            <div class="chemical-bubble"></div>
+                        </div>
+                    </div>
+                    <h1>Хемпьютер</h1>
+                    <div class="team-badge">
+                        <div class="element-x-logo">
+                            <div class="atom"></div>
+                            <div class="atom"></div>
+                            <div class="atom"></div>
+                            <div class="atom"></div>
+                        </div>
+                        Команда "Элемент X"
+                    </div>
+                </a>
+                <nav class="main-nav">
+                    <a href="#theory" class="nav-link active">Теория</a>
+                    <a href="#simulator" class="nav-link">Симулятор</a>
+                    <a href="#tables" class="nav-link">Таблицы</a>
+                    <a href="#experiment" class="nav-link">Эксперимент</a>
+                    <a href="#team" class="nav-link">Команда</a>
+                </nav>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                    <span class="emoji-icon">☰</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Мобильное меню -->
+        <nav class="mobile-nav" id="mobileNav">
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+                <span class="emoji-icon">✕</span>
+            </button>
+            <a href="#theory" class="nav-link active">Теория</a>
+            <a href="#simulator" class="nav-link">Симулятор</a>
+            <a href="#tables" class="nav-link">Таблицы</a>
+            <a href="#experiment" class="nav-link">Эксперимент</a>
+            <a href="#team" class="nav-link">Команда</a>
+        </nav>
+
+        <!-- Герой секция -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2 class="hero-title">Окислительно-восстановительные вычисления</h2>
+                    <p class="hero-subtitle">Исследуйте мир химической логики на основе системы Fe²⁺/Fe³⁺, где окислительно-восстановительные реакции заменяют транзисторы, а пробирки становятся процессорами. Проект команды "Элемент X" - 2025</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="scrollToSection('simulator')">
+                            <i class="fas fa-play"></i>
+                            <span class="emoji-icon">▶️</span>
+                            Начать эксперимент
+                        </button>
+                        <button class="btn btn-secondary" onclick="scrollToSection('theory')">
+                            <i class="fas fa-book"></i>
+                            <span class="emoji-icon">📚</span>
+                            Изучить теорию
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="chemical-animation">
+                        <div class="reaction-vessel">
+                            <i class="fas fa-atom"></i>
+                            <span class="emoji-icon">⚛️</span>
+                        </div>
+                        <div class="floating-element">
+                            <i class="fas fa-vial"></i>
+                            <span class="emoji-icon">🧪</span>
+                        </div>
+                        <div class="floating-element">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span class="emoji-icon">🔄</span>
+                        </div>
+                        <div class="floating-element">
+                            <i class="fas fa-bolt"></i>
+                            <span class="emoji-icon">⚡</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Теория -->
+        <section id="theory" class="theory-section">
+            <div class="section-header">
+                <h2>Теория окислительно-восстановительных вычислений</h2>
+                <p>Основные принципы работы химического компьютера на основе системы Fe²⁺/Fe³⁺</p>
+            </div>
+            
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <div class="card-icon">
+                        <i class="fas fa-microchip"></i>
+                        <span class="emoji-icon">💻</span>
+                    </div>
+                    <h3>Бит в окислительно-восстановительной системе</h3>
+                    <p>В химическом компьютере бит представлен двумя различными степенями окисления железа: Fe²⁺ и Fe³⁺, которые легко преобразуются друг в друга.</p>
+                    <div class="bit-demo">
+                        <div class="chemical-bit zero">Fe²⁺</div>
+                        <div class="chemical-bit one">Fe³⁺</div>
+                    </div>
+                </div>
+                
+                <div class="theory-card">
+                    <div class="card-icon">
+                        <i class="fas fa-vial"></i>
+                        <span class="emoji-icon">🧪</span>
+                    </div>
+                    <h3>Кодирование состояний</h3>
+                    <p>Используем окислительно-восстановительные реакции железа для представления бинарных состояний системы.</p>
+                    <ul class="theory-list">
+                        <li><span class="state-zero">0 - Fe²⁺ (железо II)</span> - бледно-зеленый цвет, восстановленная форма</li>
+                        <li><span class="state-one">1 - Fe³⁺ (железо III)</span> - желто-коричневый цвет, окисленная форма</li>
+                    </ul>
+                </div>
+                
+                <div class="theory-card">
+                    <div class="card-icon">
+                        <i class="fas fa-cogs"></i>
+                        <span class="emoji-icon">⚙️</span>
+                    </div>
+                    <h3>Логические операции</h3>
+                    <p>Окислительно-восстановительные реакции позволяют реализовать базовые логические операции через управление окислителями и восстановителями.</p>
+                    <div class="operations-preview">
+                        <span class="op-tag">AND</span>
+                        <span class="op-tag">OR</span>
+                        <span class="op-tag">NOT</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chemical-principles">
+                <h3>Принципы работы</h3>
+                <div class="principles-grid">
+                    <div class="principle-item">
+                        <div class="principle-number">01</div>
+                        <h4>Двоичное кодирование</h4>
+                        <p>Каждая пробирка представляет собой ячейку памяти с состояниями Fe²⁺ (0) и Fe³⁺ (1)</p>
+                    </div>
+                    <div class="principle-item">
+                        <div class="principle-number">02</div>
+                        <h4>Окислительно-восстановительные ворота</h4>
+                        <p>Логические операции выполняются через добавление окислителей и восстановителей</p>
+                    </div>
+                    <div class="principle-item">
+                        <div class="principle-number">03</div>
+                        <h4>Цветовое считывание</h4>
+                        <p>Результат определяется по цветовой реакции ионов железа</p>
+                    </div>
+                    <div class="principle-item">
+                        <div class="principle-number">04</div>
+                        <h4>Обратимые операции</h4>
+                        <p>Состояние системы можно изменять многократно с помощью окислителей и восстановителей</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Симулятор -->
+        <section id="simulator" class="simulator-section">
+            <div class="section-header">
+                <h2>Химический симулятор</h2>
+                <p>Проводите виртуальные эксперименты с логическими операциями на основе системы Fe²⁺/Fe³⁺</p>
+            </div>
+            
+            <div class="simulator-container">
+                <div class="control-panel">
+                    <div class="panel-section">
+                        <h3>Входные параметры</h3>
+                        <div class="input-group">
+                            <label class="input-label">
+                                <span>Вход A (Fe²⁺/Fe³⁺)</span>
+                                <select id="inputA" class="styled-select">
+                                    <option value="0">0 (Fe²⁺)</option>
+                                    <option value="1">1 (Fe³⁺)</option>
+                                </select>
+                            </label>
+                            <label class="input-label">
+                                <span>Вход B (Fe²⁺/Fe³⁺)</span>
+                                <select id="inputB" class="styled-select">
+                                    <option value="0">0 (Fe²⁺)</option>
+                                    <option value="1">1 (Fe³⁺)</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h3>Логические операции</h3>
+                        <div class="operations-grid">
+                            <button class="operation-card" data-op="AND" onclick="performOperation('AND')">
+                                <div class="op-icon">
+                                    <i class="fas fa-code-branch"></i>
+                                    <span class="emoji-icon">🔗</span>
+                                </div>
+                                <span>AND (И)</span>
+                                <small>A ∧ B</small>
+                            </button>
+                            <button class="operation-card" data-op="OR" onclick="performOperation('OR')">
+                                <div class="op-icon">
+                                    <i class="fas fa-code"></i>
+                                    <span class="emoji-icon">🔀</span>
+                                </div>
+                                <span>OR (ИЛИ)</span>
+                                <small>A ∨ B</small>
+                            </button>
+                            <button class="operation-card" data-op="NOT" onclick="performOperation('NOT')">
+                                <div class="op-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <span class="emoji-icon">🔄</span>
+                                </div>
+                                <span>NOT (НЕ)</span>
+                                <small>¬A</small>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h3>Лабораторные инструменты</h3>
+                        <div class="tools-grid">
+                            <button class="tool-btn" onclick="resetExperiment()">
+                                <i class="fas fa-redo"></i>
+                                <span class="emoji-icon">🔄</span>
+                                Сброс
+                            </button>
+                            <button class="tool-btn" onclick="randomExperiment()">
+                                <i class="fas fa-random"></i>
+                                <span class="emoji-icon">🎲</span>
+                                Случайно
+                            </button>
+                            <button class="tool-btn" onclick="saveExperiment()">
+                                <i class="fas fa-save"></i>
+                                <span class="emoji-icon">💾</span>
+                                Сохранить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="experiment-area">
+                    <div class="lab-bench">
+                        <div class="reagent-bottles">
+                            <div class="bottle fe2" title="Раствор Fe²⁺ (железо II)">
+                                <div class="bottle-liquid"></div>
+                                <span>Fe²⁺</span>
+                            </div>
+                            <div class="bottle fe3" title="Раствор Fe³⁺ (железо III)">
+                                <div class="bottle-liquid"></div>
+                                <span>Fe³⁺</span>
+                            </div>
+                            <div class="bottle oxidizer" title="Окислитель (KMnO₄)">
+                                <div class="bottle-liquid"></div>
+                                <span>KMnO₄</span>
+                            </div>
+                            <div class="bottle reducer" title="Восстановитель (Na₂SO₃)">
+                                <div class="bottle-liquid"></div>
+                                <span>Na₂SO₃</span>
+                            </div>
+                        </div>
+                        
+                        <div class="test-tubes-rack">
+                            <div class="tube-container">
+                                <div class="tube" id="tubeA">
+                                    <div class="tube-liquid" id="liquidA"></div>
+                                    <div class="tube-glow"></div>
+                                </div>
+                                <div class="tube-label">Вход A</div>
+                                <div class="tube-value" id="valueA">0</div>
+                            </div>
+                            
+                            <div class="tube-container">
+                                <div class="tube" id="tubeB">
+                                    <div class="tube-liquid" id="liquidB"></div>
+                                    <div class="tube-glow"></div>
+                                </div>
+                                <div class="tube-label">Вход B</div>
+                                <div class="tube-value" id="valueB">0</div>
+                            </div>
+                            
+                            <div class="tube-container result">
+                                <div class="tube" id="tubeResult">
+                                    <div class="tube-liquid" id="liquidResult"></div>
+                                    <div class="tube-glow"></div>
+                                    <div class="reaction-bubbles"></div>
+                                </div>
+                                <div class="tube-label">Результат Q</div>
+                                <div class="tube-value" id="valueResult">?</div>
+                            </div>
+                        </div>
+                        
+                        <div class="reaction-animation" id="reactionAnimation">
+                            <!-- Частицы реакции будут добавлены через JS -->
+                        </div>
+                    </div>
+                    
+                    <div class="experiment-info">
+                        <div class="info-card">
+                            <h4>Текущая операция</h4>
+                            <div class="current-op" id="currentOp">-</div>
+                        </div>
+                        <div class="info-card">
+                            <h4>Химическое объяснение</h4>
+                            <div class="explanation" id="explanation">
+                                Выберите входные значения и операцию для начала эксперимента
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Таблицы истинности -->
+        <section id="tables" class="tables-section">
+            <div class="section-header">
+                <h2>Таблицы истинности</h2>
+                <p>Полная математическая модель окислительно-восстановительных логических операций</p>
+            </div>
+            
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="and">AND (И)</button>
+                    <button class="tab-btn" data-tab="or">OR (ИЛИ)</button>
+                    <button class="tab-btn" data-tab="not">NOT (НЕ)</button>
+                </div>
+                
+                <div class="tabs-content">
+                    <div class="tab-pane active" id="and-tab">
+                        <div class="table-container">
+                            <table class="truth-table">
+                                <thead>
+                                    <tr>
+                                        <th>A (Fe²⁺/Fe³⁺)</th>
+                                        <th>B (Fe²⁺/Fe³⁺)</th>
+                                        <th>A ∧ B</th>
+                                        <th>Химическая реализация</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="and-table-body">
+                                    <!-- Заполнится JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="or-tab">
+                        <div class="table-container">
+                            <table class="truth-table">
+                                <thead>
+                                    <tr>
+                                        <th>A (Fe²⁺/Fe³⁺)</th>
+                                        <th>B (Fe²⁺/Fe³⁺)</th>
+                                        <th>A ∨ B</th>
+                                        <th>Химическая реализация</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="or-table-body">
+                                    <!-- Заполнится JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane" id="not-tab">
+                        <div class="table-container">
+                            <table class="truth-table">
+                                <thead>
+                                    <tr>
+                                        <th>A (Fe²⁺/Fe³⁺)</th>
+                                        <th>¬A</th>
+                                        <th>Химическая реализация</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="not-table-body">
+                                    <!-- Заполнится JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Эксперимент -->
+        <section id="experiment" class="experiment-section">
+            <div class="section-header">
+                <h2>Реальный эксперимент</h2>
+                <p>Инструкция для проведения окислительно-восстановительного эксперимента в лаборатории</p>
+            </div>
+            
+            <div class="experiment-guide">
+                <div class="guide-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Подготовка растворов</h3>
+                        <p>Приготовьте растворы Fe²⁺ (FeSO₄), Fe³⁺ (FeCl₃), окислителя (KMnO₄ в кислой среде) и восстановителя (Na₂SO₃)</p>
+                        <div class="step-tips">
+                            <div class="tip">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span class="emoji-icon">⚠️</span>
+                                Используйте защитные очки и перчатки
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Настройка входов</h3>
+                        <p>В пробирки добавьте соответствующие растворы Fe²⁺ или Fe³⁺ согласно выбранным значениям A и B</p>
+                        <div class="chemical-equation">
+                            Fe²⁺ ⇌ Fe³⁺ + e⁻
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Выполнение операции</h3>
+                        <p>Следуйте процедуре для выбранной логической операции, наблюдайте за цветовыми изменениями</p>
+                        <div class="observation">
+                            <span class="obs-color green"></span> Fe²⁺ (зеленый) = 0
+                            <span class="obs-color blue"></span> Fe³⁺ (желто-коричневый) = 1
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Запись результатов</h3>
+                        <p>Зафиксируйте конечное состояние системы и сравните с ожидаемым результатом</p>
+                        <div class="results-example">
+                            <div class="result-item success">
+                                <i class="fas fa-check"></i>
+                                <span class="emoji-icon">✅</span>
+                                Совпадение с таблицей истинности
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="safety-notice">
+                    <div class="safety-header">
+                        <i class="fas fa-skull-crossbones"></i>
+                        <span class="emoji-icon">☠️</span>
+                        <h3>Меры безопасности</h3>
+                    </div>
+                    <ul class="safety-list">
+                        <li>Работайте в вытяжном шкафу или хорошо проветриваемом помещении</li>
+                        <li>Используйте защитные очки, перчатки и лабораторный халат</li>
+                        <li>Избегайте прямого контакта с растворами перманганата и сульфита</li>
+                        <li>Имейте под рукой воду для промывки в случае попадания на кожу</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Команда -->
+        <section id="team" class="team-section">
+            <div class="section-header">
+                <h2>Наша команда</h2>
+                <p>Команда "Элемент X" - создатели проекта Хемпьютер</p>
+            </div>
+            
+            <div class="team-grid">
+                <!-- Руководитель - отдельный ряд -->
+                <div class="supervisor-row">
+                    <div class="team-member supervisor">
+                        <div class="member-avatar">
+                            <i class="fas fa-star"></i>
+                            <span class="emoji-icon">⭐</span>
+                        </div>
+                        <h3>Рябикова<br>Мария Михайловна</h3>
+                    </div>
+                </div>
+
+                <!-- Первый ряд участников -->
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-atom"></i>
+                        <span class="emoji-icon">⚛️</span>
+                    </div>
+                    <h3>Пивнев<br>Илья</h3>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-bolt"></i>
+                        <span class="emoji-icon">⚡</span>
+                    </div>
+                    <h3>Зайко<br>Дмитрий</h3>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-feather"></i>
+                        <span class="emoji-icon">🪶</span>
+                    </div>
+                    <h3>Макшанова<br>Арина</h3>
+                </div>
+
+                <!-- Второй ряд участников -->
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-compass"></i>
+                        <span class="emoji-icon">🧭</span>
+                    </div>
+                    <h3>Решетов<br>Демид</h3>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-microchip"></i>
+                        <span class="emoji-icon">💻</span>
+                    </div>
+                    <h3>Акопян<br>Римма</h3>
+                </div>
+
+                <div class="team-member">
+                    <div class="member-avatar">
+                        <i class="fas fa-seedling"></i>
+                        <span class="emoji-icon">🌱</span>
+                    </div>
+                    <h3>Абасова<br>Амина</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- Футер -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Хемпьютер</h3>
+                    <p>Интерактивная платформа для изучения окислительно-восстановительных вычислений на основе системы Fe²⁺/Fe³⁺. Проект команды "Элемент X" - 2025</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Быстрые ссылки</h4>
+                    <div class="footer-links">
+                        <a href="#theory"><i class="fas fa-arrow-right"></i><span class="emoji-icon">➡️</span> Теория</a>
+                        <a href="#simulator"><i class="fas fa-arrow-right"></i><span class="emoji-icon">➡️</span> Симулятор</a>
+                        <a href="#tables"><i class="fas fa-arrow-right"></i><span class="emoji-icon">➡️</span> Таблицы</a>
+                        <a href="#experiment"><i class="fas fa-arrow-right"></i><span class="emoji-icon">➡️</span> Эксперимент</a>
+                        <a href="#team"><i class="fas fa-arrow-right"></i><span class="emoji-icon">➡️</span> Команда</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Хемпьютерная задача. Образовательный проект команды "Элемент X" по химической информатике</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Класс химического компьютера на основе Fe²⁺/Fe³⁺
+        class ChemicalComputer {
+            constructor() {
+                this.currentOperation = null;
+                this.operations = {
+                    'AND': (a, b) => a && b ? 1 : 0,
+                    'OR': (a, b) => a || b ? 1 : 0,
+                    'NOT': (a) => a ? 0 : 1
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.createParticles();
+                this.initTruthTables();
+                this.setupNavigation();
+                this.setupTabs();
+                this.updateInputDisplays();
+                this.setupScrollEffects();
+                this.setupMobileMenu();
+                this.setupIconsFallback();
+                this.initBubbles();
+            }
+            
+            // Инициализация химических пузырьков
+            initBubbles() {
+                const bubbles = document.querySelectorAll('.chemical-bubble');
+                bubbles.forEach(bubble => {
+                    bubble.style.opacity = '1';
+                });
+            }
+            
+            // Настройка fallback для иконок
+            setupIconsFallback() {
+                // Проверяем, загрузились ли иконки Font Awesome
+                setTimeout(() => {
+                    const testIcon = document.createElement('i');
+                    testIcon.className = 'fas fa-test';
+                    testIcon.style.position = 'absolute';
+                    testIcon.style.left = '-9999px';
+                    document.body.appendChild(testIcon);
+                    
+                    const isIconsLoaded = testIcon.offsetWidth > 0;
+                    document.body.removeChild(testIcon);
+                    
+                    if (!isIconsLoaded) {
+                        document.body.classList.add('icons-failed');
+                        console.log('Font Awesome не загрузился, используем эмодзи');
+                    }
+                }, 2000);
+            }
+            
+            // Создание частиц фона
+            createParticles() {
+                const container = document.getElementById('particles');
+                const particleCount = 80;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    const size = Math.random() * 6 + 2;
+                    const posX = Math.random() * 100;
+                    const delay = Math.random() * 20;
+                    const duration = Math.random() * 10 + 15;
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${posX}vw`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+                    
+                    // Разные цвета частиц
+                    const colors = [
+                        'rgba(99, 102, 241, 0.2)',
+                        'rgba(245, 158, 11, 0.2)',
+                        'rgba(16, 185, 129, 0.2)',
+                        'rgba(139, 92, 246, 0.2)'
+                    ];
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.background = color;
+                    
+                    container.appendChild(particle);
+                }
+            }
+            
+            // Настройка мобильного меню
+            setupMobileMenu() {
+                const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+                const mobileNav = document.getElementById('mobileNav');
+                const closeMenu = document.getElementById('closeMenu');
+                
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileNav.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+                
+                closeMenu.addEventListener('click', () => {
+                    mobileNav.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+                
+                // Закрытие меню при клике на ссылку
+                mobileNav.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileNav.classList.remove('active');
+                        document.body.style.overflow = '';
+                    });
+                });
+            }
+            
+            // Навигация
+            setupNavigation() {
+                const navLinks = document.querySelectorAll('.nav-link');
+                const header = document.getElementById('mainHeader');
+                
+                // Изменение хедера при скролле
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href').substring(1);
+                        const targetSection = document.getElementById(targetId);
+                        
+                        if (targetSection) {
+                            navLinks.forEach(l => l.classList.remove('active'));
+                            this.classList.add('active');
+                            targetSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+            
+            // Эффекты при скролле
+            setupScrollEffects() {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('fade-in');
+                        }
+                    });
+                }, observerOptions);
+                
+                // Наблюдаем за всеми карточками и секциями
+                document.querySelectorAll('.theory-card, .principle-item, .step-card, .team-member').forEach(el => {
+                    observer.observe(el);
+                });
+            }
+            
+            // Настройка вкладок таблиц
+            setupTabs() {
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const tabName = e.target.dataset.tab;
+                        this.switchTab(tabName);
+                    });
+                });
+            }
+            
+            // Переключение вкладок
+            switchTab(tabName) {
+                // Скрыть все панели
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('active');
+                });
+                
+                // Убрать активный класс со всех кнопок
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Показать выбранную панель
+                const activePane = document.getElementById(`${tabName}-tab`);
+                if (activePane) {
+                    activePane.classList.add('active');
+                }
+                
+                // Активировать выбранную кнопку
+                const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                }
+            }
+            
+            // Инициализация таблиц истинности для системы Fe²⁺/Fe³⁺
+            initTruthTables() {
+                const tables = {
+                    'and-table-body': [
+                        [0, 0, 0, 'Fe²⁺ + Fe²⁺ (оба в восстановленной форме) - результат Fe²⁺'],
+                        [0, 1, 0, 'Fe²⁺ + Fe³⁺ (нет окислителя) - результат Fe²⁺'],
+                        [1, 0, 0, 'Fe³⁺ + Fe²⁺ (нет катализатора) - результат Fe²⁺'],
+                        [1, 1, 1, 'Fe³⁺ + Fe³⁺ (каталитическое окисление) - результат Fe³⁺']
+                    ],
+                    'or-table-body': [
+                        [0, 0, 0, 'Fe²⁺ + Fe²⁺ (нет окислителя) - результат Fe²⁺'],
+                        [0, 1, 1, 'Fe²⁺ + Fe³⁺ (окисление происходит) - результат Fe³⁺'],
+                        [1, 0, 1, 'Fe³⁺ + Fe²⁺ (окисление происходит) - результат Fe³⁺'],
+                        [1, 1, 1, 'Fe³⁺ + Fe³⁺ (уже окислены) - результат Fe³⁺']
+                    ],
+                    'not-table-body': [
+                        [0, 1, 'Fe²⁺ + KMnO₄ (окислитель) → Fe³⁺'],
+                        [1, 0, 'Fe³⁺ + Na₂SO₃ (восстановитель) → Fe²⁺']
+                    ]
+                };
+                
+                for (const [tableId, data] of Object.entries(tables)) {
+                    this.fillTable(tableId, data);
+                }
+            }
+            
+            fillTable(tableId, data) {
+                const tbody = document.getElementById(tableId);
+                if (!tbody) return;
+                
+                tbody.innerHTML = '';
+                
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    
+                    row.forEach((cell, index) => {
+                        const td = document.createElement('td');
+                        
+                        // Для химических состояний показываем Fe²⁺/Fe³⁺ вместо 0/1
+                        if (index < 3 && (cell === 0 || cell === 1)) {
+                            if (tableId === 'not-table-body' && index === 1) {
+                                td.textContent = cell === 0 ? 'Fe²⁺' : 'Fe³⁺';
+                            } else {
+                                td.textContent = cell === 0 ? 'Fe²⁺' : 'Fe³⁺';
+                            }
+                            
+                            td.style.color = cell ? '#4f46e5' : '#f59e0b';
+                            td.style.fontWeight = '600';
+                        } else {
+                            td.textContent = cell;
+                        }
+                        
+                        tr.appendChild(td);
+                    });
+                    
+                    tbody.appendChild(tr);
+                });
+            }
+            
+            // Обновление отображения входов
+            updateInputDisplays() {
+                const inputA = parseInt(document.getElementById('inputA').value);
+                const inputB = parseInt(document.getElementById('inputB').value);
+                
+                const liquidA = document.getElementById('liquidA');
+                const liquidB = document.getElementById('liquidB');
+                const valueA = document.getElementById('valueA');
+                const valueB = document.getElementById('valueB');
+                
+                // Обновляем пробирку A
+                if (inputA) {
+                    liquidA.classList.add('blue');
+                    valueA.textContent = 'Fe³⁺';
+                    valueA.style.color = '#4f46e5';
+                } else {
+                    liquidA.classList.remove('blue');
+                    valueA.textContent = 'Fe²⁺';
+                    valueA.style.color = '#f59e0b';
+                }
+                
+                // Обновляем пробирку B
+                if (inputB) {
+                    liquidB.classList.add('blue');
+                    valueB.textContent = 'Fe³⁺';
+                    valueB.style.color = '#4f46e5';
+                } else {
+                    liquidB.classList.remove('blue');
+                    valueB.textContent = 'Fe²⁺';
+                    valueB.style.color = '#f59e0b';
+                }
+            }
+        }
+
+        // Глобальные функции
+        const chemComputer = new ChemicalComputer();
+
+        function performOperation(operation) {
+            chemComputer.currentOperation = operation;
+            
+            const inputA = parseInt(document.getElementById('inputA').value);
+            const inputB = parseInt(document.getElementById('inputB').value);
+            
+            document.getElementById('currentOp').textContent = operation;
+            
+            chemComputer.updateInputDisplays();
+            
+            document.querySelectorAll('.operation-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.operation-card').classList.add('active');
+            
+            let result;
+            switch(operation) {
+                case 'AND':
+                    result = inputA && inputB ? 1 : 0;
+                    document.getElementById('explanation').textContent = 
+                        `Логическое И: Fe³⁺ образуется только при наличии обоих окислителей (H₂O₂ и катализатора Cu²⁺). ${!inputA ? 'Fe²⁺ в A. ' : ''}${!inputB ? 'Fe²⁺ в B. ' : ''}${result ? 'Оба входа Fe³⁺ - каталитическое окисление происходит.' : 'Необходимые условия для окисления отсутствуют - остается Fe²⁺.'}`;
+                    break;
+                case 'OR':
+                    result = inputA || inputB ? 1 : 0;
+                    document.getElementById('explanation').textContent = 
+                        `Логическое ИЛИ: Fe³⁺ образуется при наличии любого окислителя (HNO₃ или K₂Cr₂O₇). ${inputA ? 'Fe³⁺ в A. ' : ''}${inputB ? 'Fe³⁺ в B. ' : ''}${result ? 'Обнаружен окислитель - Fe²⁺ окисляется до Fe³⁺.' : 'Окислители отсутствуют - остается Fe²⁺.'}`;
+                    break;
+                case 'NOT':
+                    result = inputA ? 0 : 1;
+                    document.getElementById('explanation').textContent = 
+                        `Логическое НЕ: Инверсия через окислительно-восстановительную реакцию. ${inputA ? 'Fe³⁺ добавлен - восстановитель Na₂SO₃ превращает его в Fe²⁺.' : 'Fe²⁺ добавлен - окислитель KMnO₄ превращает его в Fe³⁺.'}`;
+                    break;
+            }
+            
+            // Анимация результата
+            setTimeout(() => {
+                const resultLiquid = document.getElementById('liquidResult');
+                const valueResult = document.getElementById('valueResult');
+                
+                if (result) {
+                    resultLiquid.classList.add('blue');
+                    valueResult.textContent = 'Fe³⁺';
+                    valueResult.style.color = '#4f46e5';
+                } else {
+                    resultLiquid.classList.remove('blue');
+                    valueResult.textContent = 'Fe²⁺';
+                    valueResult.style.color = '#f59e0b';
+                }
+                
+                // Создание анимации реакции
+                createReactionAnimation(result);
+            }, 500);
+        }
+
+        function createReactionAnimation(result) {
+            const animationContainer = document.getElementById('reactionAnimation');
+            animationContainer.innerHTML = '';
+            animationContainer.classList.add('active');
+            
+            const particleCount = result ? 30 : 15;
+            const color = result ? '#4f46e5' : '#f59e0b';
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.background = color;
+                
+                // Случайное положение и движение
+                const tx = (Math.random() - 0.5) * 200;
+                const ty = (Math.random() - 0.5) * 200;
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+                
+                // Случайная задержка
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                
+                animationContainer.appendChild(particle);
+            }
+            
+            // Убрать анимацию после завершения
+            setTimeout(() => {
+                animationContainer.classList.remove('active');
+            }, 1500);
+        }
+
+        function resetExperiment() {
+            document.getElementById('inputA').value = '0';
+            document.getElementById('inputB').value = '0';
+            chemComputer.updateInputDisplays();
+            
+            const resultLiquid = document.getElementById('liquidResult');
+            resultLiquid.classList.remove('blue');
+            document.getElementById('valueResult').textContent = '?';
+            document.getElementById('valueResult').style.color = '#64748b';
+            document.getElementById('currentOp').textContent = '-';
+            document.getElementById('explanation').textContent = 'Выберите входные значения и операцию для начала эксперимента';
+            
+            document.querySelectorAll('.operation-card').forEach(card => {
+                card.classList.remove('active');
+            });
+        }
+
+        function randomExperiment() {
+            const randomA = Math.random() > 0.5 ? '1' : '0';
+            const randomB = Math.random() > 0.5 ? '1' : '0';
+            const operations = ['AND', 'OR', 'NOT'];
+            const randomOp = operations[Math.floor(Math.random() * operations.length)];
+            
+            document.getElementById('inputA').value = randomA;
+            document.getElementById('inputB').value = randomB;
+            chemComputer.updateInputDisplays();
+            
+            setTimeout(() => {
+                performOperation(randomOp);
+            }, 500);
+        }
+
+        function saveExperiment() {
+            const inputA = document.getElementById('inputA').value === '0' ? 'Fe²⁺' : 'Fe³⁺';
+            const inputB = document.getElementById('inputB').value === '0' ? 'Fe²⁺' : 'Fe³⁺';
+            const currentOp = document.getElementById('currentOp').textContent;
+            const result = document.getElementById('valueResult').textContent;
+            
+            // Создание красивого уведомления
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(16, 185, 129, 0.9);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="emoji-icon">✅</span>
+                    <span>Эксперимент сохранен!</span>
+                </div>
+                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">
+                    A: ${inputA}, B: ${inputB}, Операция: ${currentOp}, Результат: ${result}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Анимация появления
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Удаление уведомления через 3 секунды
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+                
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${sectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
