@@ -644,6 +644,18 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success:hover {
+            background: var(--secondary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
         .hero-visual {
             display: flex;
             justify-content: center;
@@ -1213,7 +1225,7 @@
         /* ===== ИНСТРУМЕНТЫ ===== */
         .tools-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1.25rem;
         }
 
@@ -1253,6 +1265,16 @@
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
             border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .tool-btn.btn-success {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary-dark);
+        }
+
+        .tool-btn.btn-success:hover {
+            background: var(--secondary-dark);
         }
 
         /* ===== ОБЛАСТЬ ЭКСПЕРИМЕНТА ===== */
@@ -1320,6 +1342,11 @@
         .bottle.reducer .bottle-liquid {
             background: linear-gradient(to bottom, var(--secondary), var(--secondary-dark));
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .bottle.catalyst .bottle-liquid {
+            background: linear-gradient(to bottom, #a78bfa, #8b5cf6);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
         }
 
         .bottle span {
@@ -2490,58 +2517,50 @@
             <div class="simulator-container">
                 <div class="control-panel">
                     <div class="panel-section">
-                        <h3>Входные параметры</h3>
+                        <h3>Выберите операцию</h3>
                         <div class="input-group">
-                            <label class="input-label">
-                                <span>Вход A (Fe²⁺/Fe³⁺)</span>
-                                <select id="inputA" class="styled-select">
-                                    <option value="0">0 (Fe²⁺)</option>
-                                    <option value="1">1 (Fe³⁺)</option>
-                                </select>
-                            </label>
-                            <label class="input-label">
-                                <span>Вход B (Fe²⁺/Fe³⁺)</span>
-                                <select id="inputB" class="styled-select">
-                                    <option value="0">0 (Fe²⁺)</option>
-                                    <option value="1">1 (Fe³⁺)</option>
-                                </select>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="panel-section">
-                        <h3>Логические операции</h3>
-                        <div class="operations-grid">
-                            <button class="operation-card" data-op="AND" onclick="performOperation('AND')">
+                            <div class="operation-card" data-op="AND" onclick="selectOperation('AND')">
                                 <div class="op-icon">
                                     <i class="fas fa-code-branch"></i>
                                     <span class="emoji-icon">🔗</span>
                                 </div>
                                 <span>AND (И)</span>
                                 <small>A ∧ B</small>
-                            </button>
-                            <button class="operation-card" data-op="OR" onclick="performOperation('OR')">
+                            </div>
+                            <div class="operation-card" data-op="OR" onclick="selectOperation('OR')">
                                 <div class="op-icon">
                                     <i class="fas fa-code"></i>
                                     <span class="emoji-icon">🔀</span>
                                 </div>
                                 <span>OR (ИЛИ)</span>
                                 <small>A ∨ B</small>
-                            </button>
-                            <button class="operation-card" data-op="NOT" onclick="performOperation('NOT')">
+                            </div>
+                            <div class="operation-card" data-op="NOT" onclick="selectOperation('NOT')">
                                 <div class="op-icon">
                                     <i class="fas fa-exchange-alt"></i>
                                     <span class="emoji-icon">🔄</span>
                                 </div>
                                 <span>NOT (НЕ)</span>
                                 <small>¬A</small>
-                            </button>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="panel-section">
-                        <h3>Лабораторные инструменты</h3>
+                        <h3 id="inputLabel">Входные параметры</h3>
+                        <div class="input-group" id="inputContainer">
+                            <!-- Здесь будут динамически создаваться входы -->
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h3>Управление экспериментом</h3>
                         <div class="tools-grid">
+                            <button class="tool-btn" onclick="performExperiment()">
+                                <i class="fas fa-play-circle"></i>
+                                <span class="emoji-icon">▶️</span>
+                                Подтвердить
+                            </button>
                             <button class="tool-btn" onclick="resetExperiment()">
                                 <i class="fas fa-redo"></i>
                                 <span class="emoji-icon">🔄</span>
@@ -2552,10 +2571,26 @@
                                 <span class="emoji-icon">🎲</span>
                                 Случайно
                             </button>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h3>Лабораторные инструменты</h3>
+                        <div class="tools-grid">
                             <button class="tool-btn" onclick="saveExperiment()">
                                 <i class="fas fa-save"></i>
                                 <span class="emoji-icon">💾</span>
                                 Сохранить
+                            </button>
+                            <button class="tool-btn" onclick="scrollToSection('tables')">
+                                <i class="fas fa-table"></i>
+                                <span class="emoji-icon">📊</span>
+                                Таблицы
+                            </button>
+                            <button class="tool-btn" onclick="scrollToSection('experiment')">
+                                <i class="fas fa-flask"></i>
+                                <span class="emoji-icon">🧪</span>
+                                Инструкция
                             </button>
                         </div>
                     </div>
@@ -2563,23 +2598,8 @@
                 
                 <div class="experiment-area">
                     <div class="lab-bench">
-                        <div class="reagent-bottles">
-                            <div class="bottle fe2" title="Раствор Fe²⁺ (железо II)">
-                                <div class="bottle-liquid"></div>
-                                <span>Fe²⁺</span>
-                            </div>
-                            <div class="bottle fe3" title="Раствор Fe³⁺ (железо III)">
-                                <div class="bottle-liquid"></div>
-                                <span>Fe³⁺</span>
-                            </div>
-                            <div class="bottle oxidizer" title="Окислитель (KMnO₄)">
-                                <div class="bottle-liquid"></div>
-                                <span>KMnO₄</span>
-                            </div>
-                            <div class="bottle reducer" title="Восстановитель (Na₂SO₃)">
-                                <div class="bottle-liquid"></div>
-                                <span>Na₂SO₃</span>
-                            </div>
+                        <div class="reagent-bottles" id="reagentBottles">
+                            <!-- Реактивы будут динамически меняться -->
                         </div>
                         
                         <div class="test-tubes-rack">
@@ -2588,7 +2608,7 @@
                                     <div class="tube-liquid" id="liquidA"></div>
                                     <div class="tube-glow"></div>
                                 </div>
-                                <div class="tube-label">Вход A</div>
+                                <div class="tube-label" id="labelA">Вход A</div>
                                 <div class="tube-value" id="valueA">0</div>
                             </div>
                             
@@ -2597,7 +2617,7 @@
                                     <div class="tube-liquid" id="liquidB"></div>
                                     <div class="tube-glow"></div>
                                 </div>
-                                <div class="tube-label">Вход B</div>
+                                <div class="tube-label" id="labelB">Вход B</div>
                                 <div class="tube-value" id="valueB">0</div>
                             </div>
                             
@@ -2625,7 +2645,7 @@
                         <div class="info-card">
                             <h4>Химическое объяснение</h4>
                             <div class="explanation" id="explanation">
-                                Выберите входные значения и операцию для начала эксперимента
+                                Выберите операцию для начала эксперимента
                             </div>
                         </div>
                     </div>
@@ -2653,8 +2673,8 @@
                             <table class="truth-table">
                                 <thead>
                                     <tr>
-                                        <th>A (Fe²⁺/Fe³⁺)</th>
-                                        <th>B (Fe²⁺/Fe³⁺)</th>
+                                        <th>A (H₂O₂)</th>
+                                        <th>B (Cu²⁺)</th>
                                         <th>A ∧ B</th>
                                         <th>Химическая реализация</th>
                                     </tr>
@@ -2671,8 +2691,8 @@
                             <table class="truth-table">
                                 <thead>
                                     <tr>
-                                        <th>A (Fe²⁺/Fe³⁺)</th>
-                                        <th>B (Fe²⁺/Fe³⁺)</th>
+                                        <th>A (HNO₃)</th>
+                                        <th>B (K₂Cr₂O₇)</th>
                                         <th>A ∨ B</th>
                                         <th>Химическая реализация</th>
                                     </tr>
@@ -2767,7 +2787,6 @@
                     </div>
                     <ul class="safety-list">
                         <li>Работайте в вытяжном шкафу или хорошо проветриваемом помещении</li>
-                        <li>Используйте защитные очки, перчатки и лабораторный халат</li>
                         <li>Избегайте прямого контакта с растворами перманганата и сульфита</li>
                         <li>Имейте под рукой воду для промывки в случае попадания на кожу</li>
                     </ul>
@@ -2877,10 +2896,51 @@
         class ChemicalComputer {
             constructor() {
                 this.currentOperation = null;
-                this.operations = {
-                    'AND': (a, b) => a && b ? 1 : 0,
-                    'OR': (a, b) => a || b ? 1 : 0,
-                    'NOT': (a) => a ? 0 : 1
+                this.currentInputs = { A: 0, B: 0 };
+                this.initialState = 0; // Всегда начинаем с Fe²⁺ для AND/OR
+                
+                this.operationConfigs = {
+                    'AND': {
+                        label: 'AND (И) - Каталитическое окисление',
+                        inputs: [
+                            { id: 'A', label: 'H₂O₂ (перекись водорода)', options: [
+                                { value: '0', label: '0 (нет)' },
+                                { value: '1', label: '1 (есть)' }
+                            ]},
+                            { id: 'B', label: 'Cu²⁺ (катализатор)', options: [
+                                { value: '0', label: '0 (нет)' },
+                                { value: '1', label: '1 (есть)' }
+                            ]}
+                        ],
+                        reagents: ['fe2', 'oxidizer', 'catalyst'],
+                        calculate: (a, b) => a && b ? 1 : 0
+                    },
+                    'OR': {
+                        label: 'OR (ИЛИ) - Окисление любым реагентом',
+                        inputs: [
+                            { id: 'A', label: 'HNO₃ (азотная кислота)', options: [
+                                { value: '0', label: '0 (нет)' },
+                                { value: '1', label: '1 (есть)' }
+                            ]},
+                            { id: 'B', label: 'K₂Cr₂O₇ (бихромат)', options: [
+                                { value: '0', label: '0 (нет)' },
+                                { value: '1', label: '1 (есть)' }
+                            ]}
+                        ],
+                        reagents: ['fe2', 'oxidizer', 'oxidizer'],
+                        calculate: (a, b) => a || b ? 1 : 0
+                    },
+                    'NOT': {
+                        label: 'NOT (НЕ) - Инверсия состояния',
+                        inputs: [
+                            { id: 'A', label: 'Начальное состояние железа', options: [
+                                { value: '0', label: '0 (Fe²⁺)' },
+                                { value: '1', label: '1 (Fe³⁺)' }
+                            ]}
+                        ],
+                        reagents: ['fe2', 'fe3', 'oxidizer', 'reducer'],
+                        calculate: (a) => a ? 0 : 1
+                    }
                 };
                 
                 this.init();
@@ -2891,11 +2951,11 @@
                 this.initTruthTables();
                 this.setupNavigation();
                 this.setupTabs();
-                this.updateInputDisplays();
                 this.setupScrollEffects();
                 this.setupMobileMenu();
                 this.setupIconsFallback();
                 this.initBubbles();
+                this.showDefaultInputs();
             }
             
             // Инициализация химических пузырьков
@@ -2908,7 +2968,6 @@
             
             // Настройка fallback для иконок
             setupIconsFallback() {
-                // Проверяем, загрузились ли иконки Font Awesome
                 setTimeout(() => {
                     const testIcon = document.createElement('i');
                     testIcon.className = 'fas fa-test';
@@ -2921,7 +2980,6 @@
                     
                     if (!isIconsLoaded) {
                         document.body.classList.add('icons-failed');
-                        console.log('Font Awesome не загрузился, используем эмодзи');
                     }
                 }, 2000);
             }
@@ -2946,7 +3004,6 @@
                     particle.style.animationDelay = `${delay}s`;
                     particle.style.animationDuration = `${duration}s`;
                     
-                    // Разные цвета частиц
                     const colors = [
                         'rgba(99, 102, 241, 0.2)',
                         'rgba(245, 158, 11, 0.2)',
@@ -2976,7 +3033,6 @@
                     document.body.style.overflow = '';
                 });
                 
-                // Закрытие меню при клике на ссылку
                 mobileNav.querySelectorAll('.nav-link').forEach(link => {
                     link.addEventListener('click', () => {
                         mobileNav.classList.remove('active');
@@ -2990,7 +3046,6 @@
                 const navLinks = document.querySelectorAll('.nav-link');
                 const header = document.getElementById('mainHeader');
                 
-                // Изменение хедера при скролле
                 window.addEventListener('scroll', () => {
                     if (window.scrollY > 50) {
                         header.classList.add('scrolled');
@@ -3029,7 +3084,6 @@
                     });
                 }, observerOptions);
                 
-                // Наблюдаем за всеми карточками и секциями
                 document.querySelectorAll('.theory-card, .principle-item, .step-card, .team-member').forEach(el => {
                     observer.observe(el);
                 });
@@ -3049,47 +3103,43 @@
             
             // Переключение вкладок
             switchTab(tabName) {
-                // Скрыть все панели
                 document.querySelectorAll('.tab-pane').forEach(pane => {
                     pane.classList.remove('active');
                 });
                 
-                // Убрать активный класс со всех кнопок
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 
-                // Показать выбранную панель
                 const activePane = document.getElementById(`${tabName}-tab`);
                 if (activePane) {
                     activePane.classList.add('active');
                 }
                 
-                // Активировать выбранную кнопку
                 const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
                 if (activeButton) {
                     activeButton.classList.add('active');
                 }
             }
             
-            // Инициализация таблиц истинности для системы Fe²⁺/Fe³⁺
+            // Инициализация таблиц истинности
             initTruthTables() {
                 const tables = {
                     'and-table-body': [
-                        [0, 0, 0, 'Fe²⁺ + Fe²⁺ (оба в восстановленной форме) - результат Fe²⁺'],
-                        [0, 1, 0, 'Fe²⁺ + Fe³⁺ (нет окислителя) - результат Fe²⁺'],
-                        [1, 0, 0, 'Fe³⁺ + Fe²⁺ (нет катализатора) - результат Fe²⁺'],
-                        [1, 1, 1, 'Fe³⁺ + Fe³⁺ (каталитическое окисление) - результат Fe³⁺']
+                        [0, 0, 0, 'Нет H₂O₂ и нет катализатора - Fe²⁺ остается Fe²⁺'],
+                        [0, 1, 0, 'Нет H₂O₂, есть катализатор - реакции нет'],
+                        [1, 0, 0, 'Есть H₂O₂, нет катализатора - медленная реакция'],
+                        [1, 1, 1, 'Есть H₂O₂ и катализатор - быстрое окисление до Fe³⁺']
                     ],
                     'or-table-body': [
-                        [0, 0, 0, 'Fe²⁺ + Fe²⁺ (нет окислителя) - результат Fe²⁺'],
-                        [0, 1, 1, 'Fe²⁺ + Fe³⁺ (окисление происходит) - результат Fe³⁺'],
-                        [1, 0, 1, 'Fe³⁺ + Fe²⁺ (окисление происходит) - результат Fe³⁺'],
-                        [1, 1, 1, 'Fe³⁺ + Fe³⁺ (уже окислены) - результат Fe³⁺']
+                        [0, 0, 0, 'Нет окислителей - Fe²⁺ остается Fe²⁺'],
+                        [0, 1, 1, 'Нет HNO₃, есть K₂Cr₂O₇ - окисление происходит'],
+                        [1, 0, 1, 'Есть HNO₃, нет K₂Cr₂O₇ - окисление происходит'],
+                        [1, 1, 1, 'Есть оба окислителя - окисление происходит']
                     ],
                     'not-table-body': [
-                        [0, 1, 'Fe²⁺ + KMnO₄ (окислитель) → Fe³⁺'],
-                        [1, 0, 'Fe³⁺ + Na₂SO₃ (восстановитель) → Fe²⁺']
+                        [0, 1, 'Fe²⁺ + KMnO₄ → Fe³⁺ (окисление)'],
+                        [1, 0, 'Fe³⁺ + Na₂SO₃ → Fe²⁺ (восстановление)']
                     ]
                 };
                 
@@ -3110,12 +3160,15 @@
                     row.forEach((cell, index) => {
                         const td = document.createElement('td');
                         
-                        // Для химических состояний показываем Fe²⁺/Fe³⁺ вместо 0/1
                         if (index < 3 && (cell === 0 || cell === 1)) {
-                            if (tableId === 'not-table-body' && index === 1) {
-                                td.textContent = cell === 0 ? 'Fe²⁺' : 'Fe³⁺';
+                            if (tableId === 'not-table-body') {
+                                if (index === 0) {
+                                    td.textContent = cell === 0 ? 'Fe²⁺' : 'Fe³⁺';
+                                } else if (index === 1) {
+                                    td.textContent = cell === 0 ? 'Fe²⁺' : 'Fe³⁺';
+                                }
                             } else {
-                                td.textContent = cell === 0 ? 'Fe²⁺' : 'Fe³⁺';
+                                td.textContent = cell;
                             }
                             
                             td.style.color = cell ? '#4f46e5' : '#f59e0b';
@@ -3131,209 +3184,515 @@
                 });
             }
             
-            // Обновление отображения входов
+            // Показать входы по умолчанию
+            showDefaultInputs() {
+                const inputContainer = document.getElementById('inputContainer');
+                inputContainer.innerHTML = `
+                    <div style="text-align: center; color: var(--gray-light); padding: 2rem;">
+                        <i class="fas fa-mouse-pointer" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Выберите логическую операцию выше</p>
+                    </div>
+                `;
+            }
+            
+            // Выбор операции
+            selectOperation(operation) {
+                this.currentOperation = operation;
+                const config = this.operationConfigs[operation];
+                
+                // Обновить активную кнопку операции
+                document.querySelectorAll('.operation-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                event.target.closest('.operation-card').classList.add('active');
+                
+                // Обновить заголовок
+                document.getElementById('inputLabel').textContent = config.label;
+                document.getElementById('currentOp').textContent = operation;
+                
+                // Создать входы
+                this.createInputs(config);
+                
+                // Обновить реагенты
+                this.updateReagents(config.reagents);
+                
+                // Сбросить результаты
+                this.resetResults();
+                
+                // Обновить объяснение
+                document.getElementById('explanation').textContent = this.getOperationExplanation(operation);
+            }
+            
+            // Создать входные поля
+            createInputs(config) {
+                const inputContainer = document.getElementById('inputContainer');
+                inputContainer.innerHTML = '';
+                
+                config.inputs.forEach((input, index) => {
+                    const inputId = `input${input.id}`;
+                    const label = document.createElement('label');
+                    label.className = 'input-label';
+                    label.innerHTML = `
+                        <span>${input.label}</span>
+                        <select id="${inputId}" class="styled-select" onchange="chemComputer.updateInput('${input.id}', this.value)">
+                            ${input.options.map(opt => 
+                                `<option value="${opt.value}">${opt.label}</option>`
+                            ).join('')}
+                        </select>
+                    `;
+                    inputContainer.appendChild(label);
+                    
+                    // Инициализировать значение
+                    this.currentInputs[input.id] = parseInt(input.options[0].value);
+                });
+                
+                // Обновить отображение входов
+                this.updateInputDisplays();
+            }
+            
+            // Обновить вход
+            updateInput(inputId, value) {
+                this.currentInputs[inputId] = parseInt(value);
+                this.updateInputDisplays();
+            }
+            
+            // Обновить отображение входов
             updateInputDisplays() {
-                const inputA = parseInt(document.getElementById('inputA').value);
-                const inputB = parseInt(document.getElementById('inputB').value);
+                const config = this.operationConfigs[this.currentOperation];
+                if (!config) return;
                 
-                const liquidA = document.getElementById('liquidA');
-                const liquidB = document.getElementById('liquidB');
-                const valueA = document.getElementById('valueA');
-                const valueB = document.getElementById('valueB');
-                
-                // Обновляем пробирку A
-                if (inputA) {
-                    liquidA.classList.add('blue');
-                    valueA.textContent = 'Fe³⁺';
-                    valueA.style.color = '#4f46e5';
-                } else {
+                // Для операций AND и OR всегда показываем начальное состояние Fe²⁺
+                if (this.currentOperation === 'AND' || this.currentOperation === 'OR') {
+                    // Вход A и B показываем как есть/нет реагентов
+                    const valueA = document.getElementById('valueA');
+                    const valueB = document.getElementById('valueB');
+                    const labelA = document.getElementById('labelA');
+                    const labelB = document.getElementById('labelB');
+                    
+                    if (this.currentOperation === 'AND') {
+                        labelA.textContent = 'H₂O₂';
+                        labelB.textContent = 'Cu²⁺';
+                        valueA.textContent = this.currentInputs.A ? 'Есть' : 'Нет';
+                        valueB.textContent = this.currentInputs.B ? 'Есть' : 'Нет';
+                    } else if (this.currentOperation === 'OR') {
+                        labelA.textContent = 'HNO₃';
+                        labelB.textContent = 'K₂Cr₂O₇';
+                        valueA.textContent = this.currentInputs.A ? 'Есть' : 'Нет';
+                        valueB.textContent = this.currentInputs.B ? 'Есть' : 'Нет';
+                    }
+                    
+                    // Показываем начальное состояние Fe²⁺
+                    const liquidA = document.getElementById('liquidA');
+                    const liquidB = document.getElementById('liquidB');
                     liquidA.classList.remove('blue');
-                    valueA.textContent = 'Fe²⁺';
-                    valueA.style.color = '#f59e0b';
+                    liquidB.classList.remove('blue');
+                    valueA.style.color = '#64748b';
+                    valueB.style.color = '#64748b';
                 }
                 
-                // Обновляем пробирку B
-                if (inputB) {
-                    liquidB.classList.add('blue');
-                    valueB.textContent = 'Fe³⁺';
-                    valueB.style.color = '#4f46e5';
+                // Для операции NOT показываем состояние железа
+                else if (this.currentOperation === 'NOT') {
+                    const liquidA = document.getElementById('liquidA');
+                    const valueA = document.getElementById('valueA');
+                    const labelA = document.getElementById('labelA');
+                    
+                    labelA.textContent = 'Начальное состояние';
+                    
+                    if (this.currentInputs.A) {
+                        liquidA.classList.add('blue');
+                        valueA.textContent = 'Fe³⁺';
+                        valueA.style.color = '#4f46e5';
+                    } else {
+                        liquidA.classList.remove('blue');
+                        valueA.textContent = 'Fe²⁺';
+                        valueA.style.color = '#f59e0b';
+                    }
+                    
+                    // Скрываем вход B для NOT
+                    document.getElementById('tubeB').style.opacity = '0.5';
+                    document.getElementById('labelB').textContent = 'Не используется';
+                    document.getElementById('valueB').textContent = '-';
                 } else {
-                    liquidB.classList.remove('blue');
-                    valueB.textContent = 'Fe²⁺';
-                    valueB.style.color = '#f59e0b';
+                    // Показываем оба входа
+                    document.getElementById('tubeB').style.opacity = '1';
                 }
+            }
+            
+            // Обновить реагенты
+            updateReagents(reagentTypes) {
+                const reagentBottles = document.getElementById('reagentBottles');
+                reagentBottles.innerHTML = '';
+                
+                const reagentConfigs = {
+                    'fe2': { name: 'Fe²⁺', type: 'fe2', title: 'Раствор Fe²⁺ (железо II)' },
+                    'fe3': { name: 'Fe³⁺', type: 'fe3', title: 'Раствор Fe³⁺ (железо III)' },
+                    'oxidizer': { name: 'KMnO₄', type: 'oxidizer', title: 'Окислитель (перманганат калия)' },
+                    'reducer': { name: 'Na₂SO₃', type: 'reducer', title: 'Восстановитель (сульфит натрия)' },
+                    'catalyst': { name: 'Cu²⁺', type: 'catalyst', title: 'Катализатор (ионы меди)' }
+                };
+                
+                reagentTypes.forEach(type => {
+                    if (reagentConfigs[type]) {
+                        const config = reagentConfigs[type];
+                        const bottle = document.createElement('div');
+                        bottle.className = `bottle ${config.type}`;
+                        bottle.title = config.title;
+                        bottle.innerHTML = `
+                            <div class="bottle-liquid"></div>
+                            <span>${config.name}</span>
+                        `;
+                        reagentBottles.appendChild(bottle);
+                    }
+                });
+            }
+            
+            // Получить объяснение операции
+            getOperationExplanation(operation) {
+                const explanations = {
+                    'AND': 'Логическое И: Fe³⁺ образуется только при одновременном наличии H₂O₂ и катализатора Cu²⁺.',
+                    'OR': 'Логическое ИЛИ: Fe³⁺ образуется при наличии хотя бы одного окислителя (HNO₃ или K₂Cr₂O₇).',
+                    'NOT': 'Логическое НЕ: Инверсия состояния железа через окисление/восстановление.'
+                };
+                return explanations[operation] || 'Выберите операцию для начала эксперимента';
+            }
+            
+            // Выполнить операцию
+            performOperation() {
+                if (!this.currentOperation) {
+                    this.showNotification('Сначала выберите операцию!', 'warning');
+                    return;
+                }
+                
+                const config = this.operationConfigs[this.currentOperation];
+                let result;
+                
+                if (this.currentOperation === 'NOT') {
+                    result = config.calculate(this.currentInputs.A);
+                } else {
+                    result = config.calculate(this.currentInputs.A, this.currentInputs.B);
+                }
+                
+                // Обновить результат
+                this.showResult(result);
+                
+                // Показать объяснение
+                this.showDetailedExplanation(result);
+                
+                // Показать уведомление об успехе
+                this.showNotification('Эксперимент выполнен успешно!', 'success');
+            }
+            
+            // Показать результат
+            showResult(result) {
+                const resultLiquid = document.getElementById('liquidResult');
+                const valueResult = document.getElementById('valueResult');
+                
+                // Добавить анимацию заполнения
+                resultLiquid.style.height = result ? '85%' : '40%';
+                
+                setTimeout(() => {
+                    if (result) {
+                        resultLiquid.classList.add('blue');
+                        valueResult.textContent = 'Fe³⁺';
+                        valueResult.style.color = '#4f46e5';
+                    } else {
+                        resultLiquid.classList.remove('blue');
+                        resultLiquid.style.background = 'var(--accent)';
+                        valueResult.textContent = 'Fe²⁺';
+                        valueResult.style.color = '#f59e0b';
+                    }
+                }, 800);
+                
+                // Создать анимацию реакции
+                this.createReactionAnimation(result);
+                
+                // Добавить пузырьки в пробирку результата
+                this.addBubblesToResult();
+            }
+            
+            // Добавить пузырьки в пробирку результата
+            addBubblesToResult() {
+                const bubblesContainer = document.querySelector('.reaction-bubbles');
+                bubblesContainer.innerHTML = '';
+                
+                for (let i = 0; i < 15; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'bubble';
+                    
+                    const size = Math.random() * 8 + 4;
+                    const left = Math.random() * 70 + 15;
+                    const delay = Math.random() * 2;
+                    const duration = Math.random() * 1 + 1.5;
+                    
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${left}%`;
+                    bubble.style.animationDelay = `${delay}s`;
+                    bubble.style.animationDuration = `${duration}s`;
+                    
+                    bubblesContainer.appendChild(bubble);
+                }
+            }
+            
+            // Создать анимацию реакции
+            createReactionAnimation(result) {
+                const animationContainer = document.getElementById('reactionAnimation');
+                animationContainer.innerHTML = '';
+                animationContainer.classList.add('active');
+                
+                const particleCount = result ? 30 : 20;
+                const color = result ? '#4f46e5' : '#f59e0b';
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.background = color;
+                    
+                    const tx = (Math.random() - 0.5) * 200;
+                    const ty = (Math.random() - 0.5) * 200;
+                    particle.style.setProperty('--tx', `${tx}px`);
+                    particle.style.setProperty('--ty', `${ty}px`);
+                    particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                    
+                    animationContainer.appendChild(particle);
+                }
+                
+                setTimeout(() => {
+                    animationContainer.classList.remove('active');
+                }, 1500);
+            }
+            
+            // Показать подробное объяснение
+            showDetailedExplanation(result) {
+                let explanation = '';
+                
+                if (this.currentOperation === 'AND') {
+                    const hasH2O2 = this.currentInputs.A;
+                    const hasCatalyst = this.currentInputs.B;
+                    
+                    if (hasH2O2 && hasCatalyst) {
+                        explanation = '✓ Есть H₂O₂ и катализатор Cu²⁺ → происходит каталитическое окисление Fe²⁺ до Fe³⁺ (желто-коричневый цвет).';
+                    } else if (hasH2O2 && !hasCatalyst) {
+                        explanation = '✓ Есть H₂O₂, но нет катализатора → окисление происходит очень медленно, практически незаметно. Fe²⁺ остается (зеленый цвет).';
+                    } else if (!hasH2O2 && hasCatalyst) {
+                        explanation = '✓ Нет H₂O₂, но есть катализатор → реакции окисления не происходит. Fe²⁺ остается (зеленый цвет).';
+                    } else {
+                        explanation = '✓ Нет ни H₂O₂, ни катализатора → Fe²⁺ остается в исходном состоянии (зеленый цвет).';
+                    }
+                }
+                else if (this.currentOperation === 'OR') {
+                    const hasHNO3 = this.currentInputs.A;
+                    const hasK2Cr2O7 = this.currentInputs.B;
+                    
+                    if (hasHNO3 || hasK2Cr2O7) {
+                        explanation = '✓ Есть хотя бы один окислитель → Fe²⁺ окисляется до Fe³⁺ (желто-коричневый цвет).';
+                    } else {
+                        explanation = '✓ Нет окислителей → Fe²⁺ остается в исходном состоянии (зеленый цвет).';
+                    }
+                }
+                else if (this.currentOperation === 'NOT') {
+                    const initialState = this.currentInputs.A;
+                    
+                    if (initialState) {
+                        explanation = '✓ Начальное состояние Fe³⁺ (желто-коричневый) → добавлен восстановитель Na₂SO₃ → Fe³⁺ восстанавливается до Fe²⁺ (зеленый цвет).';
+                    } else {
+                        explanation = '✓ Начальное состояние Fe²⁺ (зеленый) → добавлен окислитель KMnO₄ → Fe²⁺ окисляется до Fe³⁺ (желто-коричневый цвет).';
+                    }
+                }
+                
+                document.getElementById('explanation').textContent = explanation;
+            }
+            
+            // Сбросить результаты
+            resetResults() {
+                const resultLiquid = document.getElementById('liquidResult');
+                resultLiquid.classList.remove('blue');
+                resultLiquid.style.height = '0%';
+                resultLiquid.style.background = 'var(--accent)';
+                document.getElementById('valueResult').textContent = '?';
+                document.getElementById('valueResult').style.color = '#64748b';
+                
+                // Очистить пузырьки
+                const bubblesContainer = document.querySelector('.reaction-bubbles');
+                if (bubblesContainer) {
+                    bubblesContainer.innerHTML = '';
+                }
+                
+                // Показать оба входа
+                document.getElementById('tubeB').style.opacity = '1';
+            }
+            
+            // Показать уведомление
+            showNotification(message, type = 'info') {
+                const colors = {
+                    'success': { bg: '#10b981', border: '#059669' },
+                    'warning': { bg: '#f59e0b', border: '#d97706' },
+                    'error': { bg: '#ef4444', border: '#dc2626' },
+                    'info': { bg: '#6366f1', border: '#4f46e5' }
+                };
+                
+                const color = colors[type] || colors.info;
+                
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${color.bg};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.75rem;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                    z-index: 10000;
+                    font-weight: 600;
+                    backdrop-filter: blur(10px);
+                    border: 1px solid ${color.border};
+                    transform: translateX(100%);
+                    opacity: 0;
+                    transition: all 0.3s ease;
+                    max-width: 300px;
+                `;
+                
+                notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(0)';
+                    notification.style.opacity = '1';
+                }, 100);
+                
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(100%)';
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
             }
         }
 
         // Глобальные функции
         const chemComputer = new ChemicalComputer();
 
-        function performOperation(operation) {
-            chemComputer.currentOperation = operation;
-            
-            const inputA = parseInt(document.getElementById('inputA').value);
-            const inputB = parseInt(document.getElementById('inputB').value);
-            
-            document.getElementById('currentOp').textContent = operation;
-            
-            chemComputer.updateInputDisplays();
-            
-            document.querySelectorAll('.operation-card').forEach(card => {
-                card.classList.remove('active');
-            });
-            event.target.closest('.operation-card').classList.add('active');
-            
-            let result;
-            switch(operation) {
-                case 'AND':
-                    result = inputA && inputB ? 1 : 0;
-                    document.getElementById('explanation').textContent = 
-                        `Логическое И: Fe³⁺ образуется только при наличии обоих окислителей (H₂O₂ и катализатора Cu²⁺). ${!inputA ? 'Fe²⁺ в A. ' : ''}${!inputB ? 'Fe²⁺ в B. ' : ''}${result ? 'Оба входа Fe³⁺ - каталитическое окисление происходит.' : 'Необходимые условия для окисления отсутствуют - остается Fe²⁺.'}`;
-                    break;
-                case 'OR':
-                    result = inputA || inputB ? 1 : 0;
-                    document.getElementById('explanation').textContent = 
-                        `Логическое ИЛИ: Fe³⁺ образуется при наличии любого окислителя (HNO₃ или K₂Cr₂O₇). ${inputA ? 'Fe³⁺ в A. ' : ''}${inputB ? 'Fe³⁺ в B. ' : ''}${result ? 'Обнаружен окислитель - Fe²⁺ окисляется до Fe³⁺.' : 'Окислители отсутствуют - остается Fe²⁺.'}`;
-                    break;
-                case 'NOT':
-                    result = inputA ? 0 : 1;
-                    document.getElementById('explanation').textContent = 
-                        `Логическое НЕ: Инверсия через окислительно-восстановительную реакцию. ${inputA ? 'Fe³⁺ добавлен - восстановитель Na₂SO₃ превращает его в Fe²⁺.' : 'Fe²⁺ добавлен - окислитель KMnO₄ превращает его в Fe³⁺.'}`;
-                    break;
-            }
-            
-            // Анимация результата
-            setTimeout(() => {
-                const resultLiquid = document.getElementById('liquidResult');
-                const valueResult = document.getElementById('valueResult');
-                
-                if (result) {
-                    resultLiquid.classList.add('blue');
-                    valueResult.textContent = 'Fe³⁺';
-                    valueResult.style.color = '#4f46e5';
-                } else {
-                    resultLiquid.classList.remove('blue');
-                    valueResult.textContent = 'Fe²⁺';
-                    valueResult.style.color = '#f59e0b';
-                }
-                
-                // Создание анимации реакции
-                createReactionAnimation(result);
-            }, 500);
+        function selectOperation(operation) {
+            chemComputer.selectOperation(operation);
         }
 
-        function createReactionAnimation(result) {
-            const animationContainer = document.getElementById('reactionAnimation');
-            animationContainer.innerHTML = '';
-            animationContainer.classList.add('active');
-            
-            const particleCount = result ? 30 : 15;
-            const color = result ? '#4f46e5' : '#f59e0b';
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.background = color;
-                
-                // Случайное положение и движение
-                const tx = (Math.random() - 0.5) * 200;
-                const ty = (Math.random() - 0.5) * 200;
-                particle.style.setProperty('--tx', `${tx}px`);
-                particle.style.setProperty('--ty', `${ty}px`);
-                
-                // Случайная задержка
-                particle.style.animationDelay = `${Math.random() * 0.5}s`;
-                
-                animationContainer.appendChild(particle);
-            }
-            
-            // Убрать анимацию после завершения
-            setTimeout(() => {
-                animationContainer.classList.remove('active');
-            }, 1500);
+        function performExperiment() {
+            chemComputer.performOperation();
         }
 
         function resetExperiment() {
-            document.getElementById('inputA').value = '0';
-            document.getElementById('inputB').value = '0';
-            chemComputer.updateInputDisplays();
+            chemComputer.currentOperation = null;
+            chemComputer.currentInputs = { A: 0, B: 0 };
             
-            const resultLiquid = document.getElementById('liquidResult');
-            resultLiquid.classList.remove('blue');
-            document.getElementById('valueResult').textContent = '?';
-            document.getElementById('valueResult').style.color = '#64748b';
             document.getElementById('currentOp').textContent = '-';
-            document.getElementById('explanation').textContent = 'Выберите входные значения и операцию для начала эксперимента';
+            document.getElementById('explanation').textContent = 'Выберите операцию для начала эксперимента';
             
             document.querySelectorAll('.operation-card').forEach(card => {
                 card.classList.remove('active');
             });
+            
+            chemComputer.showDefaultInputs();
+            chemComputer.resetResults();
+            chemComputer.updateReagents(['fe2', 'fe3', 'oxidizer', 'reducer']);
+            
+            // Сбросить отображение входов
+            document.getElementById('labelA').textContent = 'Вход A';
+            document.getElementById('labelB').textContent = 'Вход B';
+            document.getElementById('valueA').textContent = '0';
+            document.getElementById('valueB').textContent = '0';
+            document.getElementById('liquidA').classList.remove('blue');
+            document.getElementById('liquidB').classList.remove('blue');
+            document.getElementById('tubeB').style.opacity = '1';
+            
+            chemComputer.showNotification('Эксперимент сброшен', 'info');
         }
 
         function randomExperiment() {
-            const randomA = Math.random() > 0.5 ? '1' : '0';
-            const randomB = Math.random() > 0.5 ? '1' : '0';
             const operations = ['AND', 'OR', 'NOT'];
             const randomOp = operations[Math.floor(Math.random() * operations.length)];
             
-            document.getElementById('inputA').value = randomA;
-            document.getElementById('inputB').value = randomB;
-            chemComputer.updateInputDisplays();
+            // Выбрать операцию
+            selectOperation(randomOp);
             
+            // Установить случайные значения
+            if (randomOp === 'NOT') {
+                const randomA = Math.random() > 0.5 ? '1' : '0';
+                const inputA = document.getElementById('inputA');
+                if (inputA) {
+                    inputA.value = randomA;
+                    chemComputer.updateInput('A', randomA);
+                }
+            } else {
+                const randomA = Math.random() > 0.5 ? '1' : '0';
+                const randomB = Math.random() > 0.5 ? '1' : '0';
+                const inputA = document.getElementById('inputA');
+                const inputB = document.getElementById('inputB');
+                
+                if (inputA && inputB) {
+                    inputA.value = randomA;
+                    inputB.value = randomB;
+                    chemComputer.updateInput('A', randomA);
+                    chemComputer.updateInput('B', randomB);
+                }
+            }
+            
+            // Выполнить операцию с небольшой задержкой
             setTimeout(() => {
-                performOperation(randomOp);
+                performExperiment();
             }, 500);
         }
 
         function saveExperiment() {
-            const inputA = document.getElementById('inputA').value === '0' ? 'Fe²⁺' : 'Fe³⁺';
-            const inputB = document.getElementById('inputB').value === '0' ? 'Fe²⁺' : 'Fe³⁺';
+            if (!chemComputer.currentOperation) {
+                chemComputer.showNotification('Сначала выполните эксперимент!', 'warning');
+                return;
+            }
+            
+            let inputA, inputB;
+            
+            if (chemComputer.currentOperation === 'NOT') {
+                inputA = chemComputer.currentInputs.A ? 'Fe³⁺' : 'Fe²⁺';
+                inputB = 'Не используется';
+            } else if (chemComputer.currentOperation === 'AND') {
+                inputA = chemComputer.currentInputs.A ? 'Есть H₂O₂' : 'Нет H₂O₂';
+                inputB = chemComputer.currentInputs.B ? 'Есть Cu²⁺' : 'Нет Cu²⁺';
+            } else if (chemComputer.currentOperation === 'OR') {
+                inputA = chemComputer.currentInputs.A ? 'Есть HNO₃' : 'Нет HNO₃';
+                inputB = chemComputer.currentInputs.B ? 'Есть K₂Cr₂O₇' : 'Нет K₂Cr₂O₇';
+            }
+            
             const currentOp = document.getElementById('currentOp').textContent;
             const result = document.getElementById('valueResult').textContent;
             
-            // Создание красивого уведомления
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: rgba(16, 185, 129, 0.9);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 0.75rem;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-                z-index: 10000;
-                font-weight: 600;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
-            `;
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-check-circle"></i>
-                    <span class="emoji-icon">✅</span>
-                    <span>Эксперимент сохранен!</span>
-                </div>
-                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">
-                    A: ${inputA}, B: ${inputB}, Операция: ${currentOp}, Результат: ${result}
-                </div>
-            `;
+            // В реальном приложении здесь можно сохранить данные на сервер или в localStorage
+            const experimentData = {
+                operation: currentOp,
+                inputA: inputA,
+                inputB: inputB,
+                result: result,
+                timestamp: new Date().toLocaleString()
+            };
             
-            document.body.appendChild(notification);
+            // Сохраняем в localStorage
+            try {
+                const savedExperiments = JSON.parse(localStorage.getItem('chemicalExperiments') || '[]');
+                savedExperiments.push(experimentData);
+                localStorage.setItem('chemicalExperiments', JSON.stringify(savedExperiments.slice(-10))); // Храним последние 10 экспериментов
+            } catch (e) {
+                console.log('Не удалось сохранить эксперимент:', e);
+            }
             
-            // Анимация появления
-            setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            // Удаление уведомления через 3 секунды
-            setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 3000);
+            chemComputer.showNotification('Эксперимент сохранен в истории!', 'success');
         }
 
         function scrollToSection(sectionId) {
