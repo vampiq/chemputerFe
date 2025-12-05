@@ -899,6 +899,14 @@
             transform: scale(1.1) rotate(5deg);
         }
 
+        .bit-label {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--gray-light);
+        }
+
         .theory-list {
             list-style: none;
         }
@@ -1347,6 +1355,11 @@
         .bottle.catalyst .bottle-liquid {
             background: linear-gradient(to bottom, #a78bfa, #8b5cf6);
             box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+        }
+
+        .bottle.acid .bottle-liquid {
+            background: linear-gradient(to bottom, #ec4899, #db2777);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
         }
 
         .bottle span {
@@ -2447,8 +2460,12 @@
                     <h3>Бит в окислительно-восстановительной системе</h3>
                     <p>В химическом компьютере бит представлен двумя различными степенями окисления железа: Fe²⁺ и Fe³⁺, которые легко преобразуются друг в друга.</p>
                     <div class="bit-demo">
-                        <div class="chemical-bit zero">Fe²⁺</div>
-                        <div class="chemical-bit one">Fe³⁺</div>
+                        <div class="chemical-bit zero">0</div>
+                        <div class="chemical-bit one">1</div>
+                    </div>
+                    <div class="bit-demo">
+                        <div class="bit-label">Fe²⁺ (бледно-жёлтый)</div>
+                        <div class="bit-label">Fe³⁺ (буро-коричневый)</div>
                     </div>
                 </div>
                 
@@ -2460,8 +2477,8 @@
                     <h3>Кодирование состояний</h3>
                     <p>Используем окислительно-восстановительные реакции железа для представления бинарных состояний системы.</p>
                     <ul class="theory-list">
-                        <li><span class="state-zero">0 - Fe²⁺ (железо II)</span> - бледно-зеленый цвет, восстановленная форма</li>
-                        <li><span class="state-one">1 - Fe³⁺ (железо III)</span> - желто-коричневый цвет, окисленная форма</li>
+                        <li><span class="state-zero">0 - Fe²⁺ (бледно-жёлтый)</span> - восстановленная форма железа</li>
+                        <li><span class="state-one">1 - Fe³⁺ (буро-коричневый)</span> - окисленная форма железа</li>
                     </ul>
                 </div>
                 
@@ -2608,8 +2625,8 @@
                                     <div class="tube-liquid" id="liquidA"></div>
                                     <div class="tube-glow"></div>
                                 </div>
-                                <div class="tube-label" id="labelA">Вход A</div>
-                                <div class="tube-value" id="valueA">0</div>
+                                <div class="tube-label" id="labelA">Реагент A</div>
+                                <div class="tube-value" id="valueA">Нет</div>
                             </div>
                             
                             <div class="tube-container">
@@ -2617,8 +2634,8 @@
                                     <div class="tube-liquid" id="liquidB"></div>
                                     <div class="tube-glow"></div>
                                 </div>
-                                <div class="tube-label" id="labelB">Вход B</div>
-                                <div class="tube-value" id="valueB">0</div>
+                                <div class="tube-label" id="labelB">Реагент B</div>
+                                <div class="tube-value" id="valueB">Нет</div>
                             </div>
                             
                             <div class="tube-container result">
@@ -2657,7 +2674,7 @@
         <section id="tables" class="tables-section">
             <div class="section-header">
                 <h2>Таблицы истинности</h2>
-                <p>Полная математическая модель окислительно-восстановительных логических операций</p>
+                <p>Полная математическая модель окислительно    -восстановительных логических операций</p>
             </div>
             
             <div class="tabs-container">
@@ -2673,8 +2690,8 @@
                             <table class="truth-table">
                                 <thead>
                                     <tr>
-                                        <th>A (H₂O₂)</th>
-                                        <th>B (Cu²⁺)</th>
+                                        <th>A (MnO₂)</th>
+                                        <th>B (H₂SO₄)</th>
                                         <th>A ∧ B</th>
                                         <th>Химическая реализация</th>
                                     </tr>
@@ -2691,8 +2708,8 @@
                             <table class="truth-table">
                                 <thead>
                                     <tr>
-                                        <th>A (HNO₃)</th>
-                                        <th>B (K₂Cr₂O₇)</th>
+                                        <th>A (K₂Cr₂O₇)</th>
+                                        <th>B (H₂O₂)</th>
                                         <th>A ∨ B</th>
                                         <th>Химическая реализация</th>
                                     </tr>
@@ -2735,33 +2752,61 @@
                 <div class="guide-steps">
                     <div class="step-card">
                         <div class="step-number">1</div>
-                        <h3>Подготовка растворов</h3>
-                        <p>Приготовьте растворы Fe²⁺ (FeSO₄), Fe³⁺ (FeCl₃), окислителя (KMnO₄ в кислой среде) и восстановителя (Na₂SO₃)</p>
+                        <h3>Логическое AND (И)</h3>
+                        <p>Начальное состояние: Раствор FeSO₄ (Fe²⁺) - бледно-жёлтый</p>
+                        <div class="chemical-equation">
+                            Fe²⁺ + MnO₂ + H₂SO₄ → Fe³⁺ + Mn²⁺ + SO₄²⁻ + H₂O
+                        </div>
+                        <div class="observation">
+                            <span class="obs-color green"></span> Fe²⁺ (бледно-жёлтый) = 0
+                            <span class="obs-color blue"></span> Fe³⁺ (буро-коричневый) = 1
+                        </div>
                         <div class="step-tips">
                             <div class="tip">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <span class="emoji-icon">⚠️</span>
-                                Используйте защитные очки и перчатки
+                                <i class="fas fa-flask"></i>
+                                <span class="emoji-icon">🧪</span>
+                                Требуется одновременное присутствие MnO₂ и H₂SO₄
                             </div>
                         </div>
                     </div>
                     
                     <div class="step-card">
                         <div class="step-number">2</div>
-                        <h3>Настройка входов</h3>
-                        <p>В пробирки добавьте соответствующие растворы Fe²⁺ или Fe³⁺ согласно выбранным значениям A и B</p>
+                        <h3>Логическое OR (ИЛИ)</h3>
+                        <p>Начальное состояние: Раствор FeSO₄ (Fe²⁺) - бледно-жёлтый</p>
                         <div class="chemical-equation">
-                            Fe²⁺ ⇌ Fe³⁺ + e⁻
+                            Fe²⁺ + K₂Cr₂O₇/H₂O₂ → Fe³⁺
+                        </div>
+                        <div class="observation">
+                            <span class="obs-color green"></span> Fe²⁺ (бледно-жёлтый) = 0
+                            <span class="obs-color blue"></span> Fe³⁺ (буро-коричневый) = 1
+                        </div>
+                        <div class="step-tips">
+                            <div class="tip">
+                                <i class="fas fa-vial"></i>
+                                <span class="emoji-icon">⚗️</span>
+                                Оба реагента независимо окисляют Fe²⁺ до Fe³⁺
+                            </div>
                         </div>
                     </div>
                     
                     <div class="step-card">
                         <div class="step-number">3</div>
-                        <h3>Выполнение операции</h3>
-                        <p>Следуйте процедуре для выбранной логической операции, наблюдайте за цветовыми изменениями</p>
+                        <h3>Логическое NOT (НЕ)</h3>
+                        <p>Универсальный реагент H₂O₂ работает и как окислитель, и как восстановитель</p>
+                        <div class="chemical-equation">
+                            Fe²⁺ → H₂O₂ → Fe³⁺ → H₂O₂ → Fe²⁺
+                        </div>
                         <div class="observation">
-                            <span class="obs-color green"></span> Fe²⁺ (зеленый) = 0
-                            <span class="obs-color blue"></span> Fe³⁺ (желто-коричневый) = 1
+                            <span class="obs-color green"></span> Fe²⁺ (бледно-жёлтый) = 0
+                            <span class="obs-color blue"></span> Fe³⁺ (буро-коричневый) = 1
+                        </div>
+                        <div class="step-tips">
+                            <div class="tip">
+                                <i class="fas fa-sync-alt"></i>
+                                <span class="emoji-icon">🔄</span>
+                                Полный цикл инверсии одним реагентом
+                            </div>
                         </div>
                     </div>
                     
@@ -2776,6 +2821,13 @@
                                 Совпадение с таблицей истинности
                             </div>
                         </div>
+                        <div class="step-tips">
+                            <div class="tip">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span class="emoji-icon">📋</span>
+                                Проверьте цветовые переходы
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -2787,7 +2839,7 @@
                     </div>
                     <ul class="safety-list">
                         <li>Работайте в вытяжном шкафу или хорошо проветриваемом помещении</li>
-                        <li>Избегайте прямого контакта с растворами перманганата и сульфита</li>
+                        <li>Избегайте прямого контакта с концентрированными кислотами и окислителями</li>
                         <li>Имейте под рукой воду для промывки в случае попадания на кожу</li>
                     </ul>
                 </div>
@@ -2901,28 +2953,28 @@
                 
                 this.operationConfigs = {
                     'AND': {
-                        label: 'AND (И) - Каталитическое окисление',
+                        label: 'AND (И) - Окисление MnO₂ в кислой среде',
                         inputs: [
-                            { id: 'A', label: 'H₂O₂ (перекись водорода)', options: [
+                            { id: 'A', label: 'MnO₂ (оксид марганца IV)', options: [
                                 { value: '0', label: '0 (нет)' },
                                 { value: '1', label: '1 (есть)' }
                             ]},
-                            { id: 'B', label: 'Cu²⁺ (катализатор)', options: [
+                            { id: 'B', label: 'H₂SO₄ (серная кислота)', options: [
                                 { value: '0', label: '0 (нет)' },
                                 { value: '1', label: '1 (есть)' }
                             ]}
                         ],
-                        reagents: ['fe2', 'oxidizer', 'catalyst'],
+                        reagents: ['fe2', 'oxidizer', 'acid'],
                         calculate: (a, b) => a && b ? 1 : 0
                     },
                     'OR': {
                         label: 'OR (ИЛИ) - Окисление любым реагентом',
                         inputs: [
-                            { id: 'A', label: 'HNO₃ (азотная кислота)', options: [
+                            { id: 'A', label: 'K₂Cr₂O₇ (бихромат калия)', options: [
                                 { value: '0', label: '0 (нет)' },
                                 { value: '1', label: '1 (есть)' }
                             ]},
-                            { id: 'B', label: 'K₂Cr₂O₇ (бихромат)', options: [
+                            { id: 'B', label: 'H₂O₂ (перекись водорода)', options: [
                                 { value: '0', label: '0 (нет)' },
                                 { value: '1', label: '1 (есть)' }
                             ]}
@@ -2931,14 +2983,14 @@
                         calculate: (a, b) => a || b ? 1 : 0
                     },
                     'NOT': {
-                        label: 'NOT (НЕ) - Инверсия состояния',
+                        label: 'NOT (НЕ) - Инверсия состояния H₂O₂',
                         inputs: [
                             { id: 'A', label: 'Начальное состояние железа', options: [
                                 { value: '0', label: '0 (Fe²⁺)' },
                                 { value: '1', label: '1 (Fe³⁺)' }
                             ]}
                         ],
-                        reagents: ['fe2', 'fe3', 'oxidizer', 'reducer'],
+                        reagents: ['fe2', 'fe3', 'oxidizer'],
                         calculate: (a) => a ? 0 : 1
                     }
                 };
@@ -3126,20 +3178,20 @@
             initTruthTables() {
                 const tables = {
                     'and-table-body': [
-                        [0, 0, 0, 'Нет H₂O₂ и нет катализатора - Fe²⁺ остается Fe²⁺'],
-                        [0, 1, 0, 'Нет H₂O₂, есть катализатор - реакции нет'],
-                        [1, 0, 0, 'Есть H₂O₂, нет катализатора - медленная реакция'],
-                        [1, 1, 1, 'Есть H₂O₂ и катализатор - быстрое окисление до Fe³⁺']
+                        [0, 0, 0, 'Нет MnO₂ и нет H₂SO₄ - Fe²⁺ остается бледно-жёлтым'],
+                        [0, 1, 0, 'Нет MnO₂, есть H₂SO₄ - реакции окисления нет'],
+                        [1, 0, 0, 'Есть MnO₂, нет H₂SO₄ - реакции в нейтральной среде нет'],
+                        [1, 1, 1, 'Есть MnO₂ и H₂SO₄ - окисление до Fe³⁺ (буро-коричневый)']
                     ],
                     'or-table-body': [
-                        [0, 0, 0, 'Нет окислителей - Fe²⁺ остается Fe²⁺'],
-                        [0, 1, 1, 'Нет HNO₃, есть K₂Cr₂O₇ - окисление происходит'],
-                        [1, 0, 1, 'Есть HNO₃, нет K₂Cr₂O₇ - окисление происходит'],
+                        [0, 0, 0, 'Нет окислителей - Fe²⁺ остается бледно-жёлтым'],
+                        [0, 1, 1, 'Нет K₂Cr₂O₇, есть H₂O₂ - окисление происходит'],
+                        [1, 0, 1, 'Есть K₂Cr₂O₇, нет H₂O₂ - окисление происходит'],
                         [1, 1, 1, 'Есть оба окислителя - окисление происходит']
                     ],
                     'not-table-body': [
-                        [0, 1, 'Fe²⁺ + KMnO₄ → Fe³⁺ (окисление)'],
-                        [1, 0, 'Fe³⁺ + Na₂SO₃ → Fe²⁺ (восстановление)']
+                        [0, 1, 'Fe²⁺ (бледно-жёлтый) + H₂O₂ → Fe³⁺ (буро-коричневый)'],
+                        [1, 0, 'Fe³⁺ (буро-коричневый) + H₂O₂ → Fe²⁺ (бледно-жёлтый)']
                     ]
                 };
                 
@@ -3270,13 +3322,13 @@
                     const labelB = document.getElementById('labelB');
                     
                     if (this.currentOperation === 'AND') {
-                        labelA.textContent = 'H₂O₂';
-                        labelB.textContent = 'Cu²⁺';
+                        labelA.textContent = 'Реагент A';
+                        labelB.textContent = 'Реагент B';
                         valueA.textContent = this.currentInputs.A ? 'Есть' : 'Нет';
                         valueB.textContent = this.currentInputs.B ? 'Есть' : 'Нет';
                     } else if (this.currentOperation === 'OR') {
-                        labelA.textContent = 'HNO₃';
-                        labelB.textContent = 'K₂Cr₂O₇';
+                        labelA.textContent = 'Реагент A';
+                        labelB.textContent = 'Реагент B';
                         valueA.textContent = this.currentInputs.A ? 'Есть' : 'Нет';
                         valueB.textContent = this.currentInputs.B ? 'Есть' : 'Нет';
                     }
@@ -3324,10 +3376,10 @@
                 reagentBottles.innerHTML = '';
                 
                 const reagentConfigs = {
-                    'fe2': { name: 'Fe²⁺', type: 'fe2', title: 'Раствор Fe²⁺ (железо II)' },
-                    'fe3': { name: 'Fe³⁺', type: 'fe3', title: 'Раствор Fe³⁺ (железо III)' },
-                    'oxidizer': { name: 'KMnO₄', type: 'oxidizer', title: 'Окислитель (перманганат калия)' },
-                    'reducer': { name: 'Na₂SO₃', type: 'reducer', title: 'Восстановитель (сульфит натрия)' },
+                    'fe2': { name: 'Fe²⁺', type: 'fe2', title: 'Раствор FeSO₄ (бледно-жёлтый)' },
+                    'fe3': { name: 'Fe³⁺', type: 'fe3', title: 'Раствор FeCl₃ (буро-коричневый)' },
+                    'oxidizer': { name: 'H₂O₂', type: 'oxidizer', title: 'Пероксид водорода (универсальный)' },
+                    'acid': { name: 'H₂SO₄', type: 'acid', title: 'Серная кислота' },
                     'catalyst': { name: 'Cu²⁺', type: 'catalyst', title: 'Катализатор (ионы меди)' }
                 };
                 
@@ -3349,9 +3401,9 @@
             // Получить объяснение операции
             getOperationExplanation(operation) {
                 const explanations = {
-                    'AND': 'Логическое И: Fe³⁺ образуется только при одновременном наличии H₂O₂ и катализатора Cu²⁺.',
-                    'OR': 'Логическое ИЛИ: Fe³⁺ образуется при наличии хотя бы одного окислителя (HNO₃ или K₂Cr₂O₇).',
-                    'NOT': 'Логическое НЕ: Инверсия состояния железа через окисление/восстановление.'
+                    'AND': 'Логическое И: Fe³⁺ образуется только при одновременном наличии MnO₂ и H₂SO₄.',
+                    'OR': 'Логическое ИЛИ: Fe³⁺ образуется при наличии хотя бы одного окислителя (K₂Cr₂O₇ или H₂O₂).',
+                    'NOT': 'Логическое НЕ: H₂O₂ работает как универсальный реагент для инверсии состояния железа.'
                 };
                 return explanations[operation] || 'Выберите операцию для начала эксперимента';
             }
@@ -3467,36 +3519,36 @@
                 let explanation = '';
                 
                 if (this.currentOperation === 'AND') {
-                    const hasH2O2 = this.currentInputs.A;
-                    const hasCatalyst = this.currentInputs.B;
+                    const hasMnO2 = this.currentInputs.A;
+                    const hasH2SO4 = this.currentInputs.B;
                     
-                    if (hasH2O2 && hasCatalyst) {
-                        explanation = '✓ Есть H₂O₂ и катализатор Cu²⁺ → происходит каталитическое окисление Fe²⁺ до Fe³⁺ (желто-коричневый цвет).';
-                    } else if (hasH2O2 && !hasCatalyst) {
-                        explanation = '✓ Есть H₂O₂, но нет катализатора → окисление происходит очень медленно, практически незаметно. Fe²⁺ остается (зеленый цвет).';
-                    } else if (!hasH2O2 && hasCatalyst) {
-                        explanation = '✓ Нет H₂O₂, но есть катализатор → реакции окисления не происходит. Fe²⁺ остается (зеленый цвет).';
+                    if (hasMnO2 && hasH2SO4) {
+                        explanation = '✓ Есть MnO₂ и H₂SO₄ → происходит окисление Fe²⁺ до Fe³⁺ в кислой среде (буро-коричневый цвет).';
+                    } else if (hasMnO2 && !hasH2SO4) {
+                        explanation = '✓ Есть MnO₂, но нет H₂SO₄ → окисление не происходит в нейтральной среде. Fe²⁺ остается (бледно-жёлтый цвет).';
+                    } else if (!hasMnO2 && hasH2SO4) {
+                        explanation = '✓ Нет MnO₂, но есть H₂SO₄ → реакции окисления не происходит. Fe²⁺ остается (бледно-жёлтый цвет).';
                     } else {
-                        explanation = '✓ Нет ни H₂O₂, ни катализатора → Fe²⁺ остается в исходном состоянии (зеленый цвет).';
+                        explanation = '✓ Нет ни MnO₂, ни H₂SO₄ → Fe²⁺ остается в исходном состоянии (бледно-жёлтый цвет).';
                     }
                 }
                 else if (this.currentOperation === 'OR') {
-                    const hasHNO3 = this.currentInputs.A;
-                    const hasK2Cr2O7 = this.currentInputs.B;
+                    const hasK2Cr2O7 = this.currentInputs.A;
+                    const hasH2O2 = this.currentInputs.B;
                     
-                    if (hasHNO3 || hasK2Cr2O7) {
-                        explanation = '✓ Есть хотя бы один окислитель → Fe²⁺ окисляется до Fe³⁺ (желто-коричневый цвет).';
+                    if (hasK2Cr2O7 || hasH2O2) {
+                        explanation = '✓ Есть хотя бы один окислитель → Fe²⁺ окисляется до Fe³⁺ (буро-коричневый цвет).';
                     } else {
-                        explanation = '✓ Нет окислителей → Fe²⁺ остается в исходном состоянии (зеленый цвет).';
+                        explanation = '✓ Нет окислителей → Fe²⁺ остается в исходном состоянии (бледно-жёлтый цвет).';
                     }
                 }
                 else if (this.currentOperation === 'NOT') {
                     const initialState = this.currentInputs.A;
                     
                     if (initialState) {
-                        explanation = '✓ Начальное состояние Fe³⁺ (желто-коричневый) → добавлен восстановитель Na₂SO₃ → Fe³⁺ восстанавливается до Fe²⁺ (зеленый цвет).';
+                        explanation = '✓ Начальное состояние Fe³⁺ (буро-коричневый) → H₂O₂ работает как восстановитель → Fe³⁺ восстанавливается до Fe²⁺ (бледно-жёлтый цвет).';
                     } else {
-                        explanation = '✓ Начальное состояние Fe²⁺ (зеленый) → добавлен окислитель KMnO₄ → Fe²⁺ окисляется до Fe³⁺ (желто-коричневый цвет).';
+                        explanation = '✓ Начальное состояние Fe²⁺ (бледно-жёлтый) → H₂O₂ работает как окислитель → Fe²⁺ окисляется до Fe³⁺ (буро-коричневый цвет).';
                     }
                 }
                 
@@ -3603,13 +3655,13 @@
             
             chemComputer.showDefaultInputs();
             chemComputer.resetResults();
-            chemComputer.updateReagents(['fe2', 'fe3', 'oxidizer', 'reducer']);
+            chemComputer.updateReagents(['fe2', 'fe3', 'oxidizer', 'acid']);
             
             // Сбросить отображение входов
-            document.getElementById('labelA').textContent = 'Вход A';
-            document.getElementById('labelB').textContent = 'Вход B';
-            document.getElementById('valueA').textContent = '0';
-            document.getElementById('valueB').textContent = '0';
+            document.getElementById('labelA').textContent = 'Реагент A';
+            document.getElementById('labelB').textContent = 'Реагент B';
+            document.getElementById('valueA').textContent = 'Нет';
+            document.getElementById('valueB').textContent = 'Нет';
             document.getElementById('liquidA').classList.remove('blue');
             document.getElementById('liquidB').classList.remove('blue');
             document.getElementById('tubeB').style.opacity = '1';
@@ -3664,11 +3716,11 @@
                 inputA = chemComputer.currentInputs.A ? 'Fe³⁺' : 'Fe²⁺';
                 inputB = 'Не используется';
             } else if (chemComputer.currentOperation === 'AND') {
-                inputA = chemComputer.currentInputs.A ? 'Есть H₂O₂' : 'Нет H₂O₂';
-                inputB = chemComputer.currentInputs.B ? 'Есть Cu²⁺' : 'Нет Cu²⁺';
+                inputA = chemComputer.currentInputs.A ? 'Есть MnO₂' : 'Нет MnO₂';
+                inputB = chemComputer.currentInputs.B ? 'Есть H₂SO₄' : 'Нет H₂SO₄';
             } else if (chemComputer.currentOperation === 'OR') {
-                inputA = chemComputer.currentInputs.A ? 'Есть HNO₃' : 'Нет HNO₃';
-                inputB = chemComputer.currentInputs.B ? 'Есть K₂Cr₂O₇' : 'Нет K₂Cr₂O₇';
+                inputA = chemComputer.currentInputs.A ? 'Есть K₂Cr₂O₇' : 'Нет K₂Cr₂O₇';
+                inputB = chemComputer.currentInputs.B ? 'Есть H₂O₂' : 'Нет H₂O₂';
             }
             
             const currentOp = document.getElementById('currentOp').textContent;
