@@ -1362,6 +1362,26 @@
             box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
         }
 
+        .bottle.mno2 .bottle-liquid {
+            background: linear-gradient(to bottom, #6b7280, #4b5563);
+            box-shadow: 0 10px 30px rgba(107, 114, 128, 0.5);
+        }
+
+        .bottle.k2cr2o7 .bottle-liquid {
+            background: linear-gradient(to bottom, #f97316, #ea580c);
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.5);
+        }
+
+        .bottle.h2o2 .bottle-liquid {
+            background: linear-gradient(to bottom, #0ea5e9, #0284c7);
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.5);
+        }
+
+        .bottle.h2so4 .bottle-liquid {
+            background: linear-gradient(to bottom, #ec4899, #db2777);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.5);
+        }
+
         .bottle span {
             display: block;
             margin-top: 0.75rem;
@@ -2674,7 +2694,7 @@
         <section id="tables" class="tables-section">
             <div class="section-header">
                 <h2>Таблицы истинности</h2>
-                <p>Полная математическая модель окислительно    -восстановительных логических операций</p>
+                <p>Полная математическая модель окислительно-восстановительных логических операций</p>
             </div>
             
             <div class="tabs-container">
@@ -2755,7 +2775,7 @@
                         <h3>Логическое AND (И)</h3>
                         <p>Начальное состояние: Раствор FeSO₄ (Fe²⁺) - бледно-жёлтый</p>
                         <div class="chemical-equation">
-                            Fe²⁺ + MnO₂ + H₂SO₄ → Fe³⁺ + Mn²⁺ + SO₄²⁻ + H₂O
+                            2FeSO₄ + MnO₂ + 2H₂SO₄ → Fe₂(SO₄)₃ + MnSO₄ + 2H₂O
                         </div>
                         <div class="observation">
                             <span class="obs-color green"></span> Fe²⁺ (бледно-жёлтый) = 0
@@ -2775,7 +2795,10 @@
                         <h3>Логическое OR (ИЛИ)</h3>
                         <p>Начальное состояние: Раствор FeSO₄ (Fe²⁺) - бледно-жёлтый</p>
                         <div class="chemical-equation">
-                            Fe²⁺ + K₂Cr₂O₇/H₂O₂ → Fe³⁺
+                            6FeSO₄ + K₂Cr₂O₇ + 7H₂SO₄ → 3Fe₂(SO₄)₃ + Cr₂(SO₄)₃ + K₂SO₄ + 7H₂O
+                        </div>
+                        <div class="chemical-equation">
+                            2FeSO₄ + H₂O₂ + H₂SO₄ → Fe₂(SO₄)₃ + 2H₂O
                         </div>
                         <div class="observation">
                             <span class="obs-color green"></span> Fe²⁺ (бледно-жёлтый) = 0
@@ -2795,7 +2818,10 @@
                         <h3>Логическое NOT (НЕ)</h3>
                         <p>Универсальный реагент H₂O₂ работает и как окислитель, и как восстановитель</p>
                         <div class="chemical-equation">
-                            Fe²⁺ → H₂O₂ → Fe³⁺ → H₂O₂ → Fe²⁺
+                            2FeSO₄ + H₂O₂ + H₂SO₄ → Fe₂(SO₄)₃ + 2H₂O
+                        </div>
+                        <div class="chemical-equation">
+                            Fe₂(SO₄)₃ + H₂O₂ → 2FeSO₄ + O₂ + H₂SO₄
                         </div>
                         <div class="observation">
                             <span class="obs-color green"></span> Fe²⁺ (бледно-жёлтый) = 0
@@ -2964,7 +2990,7 @@
                                 { value: '1', label: '1 (есть)' }
                             ]}
                         ],
-                        reagents: ['fe2', 'oxidizer', 'acid'],
+                        reagents: ['fe2', 'mno2', 'h2so4'],
                         calculate: (a, b) => a && b ? 1 : 0
                     },
                     'OR': {
@@ -2974,12 +3000,12 @@
                                 { value: '0', label: '0 (нет)' },
                                 { value: '1', label: '1 (есть)' }
                             ]},
-                            { id: 'B', label: 'H₂O₂ (перекись водорода)', options: [
+                            { id: 'B', label: 'H₂O₂ (пероксид водорода)', options: [
                                 { value: '0', label: '0 (нет)' },
                                 { value: '1', label: '1 (есть)' }
                             ]}
                         ],
-                        reagents: ['fe2', 'oxidizer', 'oxidizer'],
+                        reagents: ['fe2', 'k2cr2o7', 'h2o2'],
                         calculate: (a, b) => a || b ? 1 : 0
                     },
                     'NOT': {
@@ -2990,7 +3016,7 @@
                                 { value: '1', label: '1 (Fe³⁺)' }
                             ]}
                         ],
-                        reagents: ['fe2', 'fe3', 'oxidizer'],
+                        reagents: ['fe2', 'fe3', 'h2o2'],
                         calculate: (a) => a ? 0 : 1
                     }
                 };
@@ -3322,13 +3348,13 @@
                     const labelB = document.getElementById('labelB');
                     
                     if (this.currentOperation === 'AND') {
-                        labelA.textContent = 'Реагент A';
-                        labelB.textContent = 'Реагент B';
+                        labelA.textContent = 'MnO₂';
+                        labelB.textContent = 'H₂SO₄';
                         valueA.textContent = this.currentInputs.A ? 'Есть' : 'Нет';
                         valueB.textContent = this.currentInputs.B ? 'Есть' : 'Нет';
                     } else if (this.currentOperation === 'OR') {
-                        labelA.textContent = 'Реагент A';
-                        labelB.textContent = 'Реагент B';
+                        labelA.textContent = 'K₂Cr₂O₇';
+                        labelB.textContent = 'H₂O₂';
                         valueA.textContent = this.currentInputs.A ? 'Есть' : 'Нет';
                         valueB.textContent = this.currentInputs.B ? 'Есть' : 'Нет';
                     }
@@ -3378,9 +3404,10 @@
                 const reagentConfigs = {
                     'fe2': { name: 'Fe²⁺', type: 'fe2', title: 'Раствор FeSO₄ (бледно-жёлтый)' },
                     'fe3': { name: 'Fe³⁺', type: 'fe3', title: 'Раствор FeCl₃ (буро-коричневый)' },
-                    'oxidizer': { name: 'H₂O₂', type: 'oxidizer', title: 'Пероксид водорода (универсальный)' },
-                    'acid': { name: 'H₂SO₄', type: 'acid', title: 'Серная кислота' },
-                    'catalyst': { name: 'Cu²⁺', type: 'catalyst', title: 'Катализатор (ионы меди)' }
+                    'mno2': { name: 'MnO₂', type: 'mno2', title: 'Оксид марганца(IV)' },
+                    'k2cr2o7': { name: 'K₂Cr₂O₇', type: 'k2cr2o7', title: 'Бихромат калия' },
+                    'h2o2': { name: 'H₂O₂', type: 'h2o2', title: 'Пероксид водорода' },
+                    'h2so4': { name: 'H₂SO₄', type: 'h2so4', title: 'Серная кислота' }
                 };
                 
                 reagentTypes.forEach(type => {
@@ -3655,7 +3682,7 @@
             
             chemComputer.showDefaultInputs();
             chemComputer.resetResults();
-            chemComputer.updateReagents(['fe2', 'fe3', 'oxidizer', 'acid']);
+            chemComputer.updateReagents(['fe2', 'fe3', 'h2o2', 'h2so4']);
             
             // Сбросить отображение входов
             document.getElementById('labelA').textContent = 'Реагент A';
